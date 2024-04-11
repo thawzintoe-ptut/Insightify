@@ -23,3 +23,4 @@ rootProject.name = "Insightify"
 include(":app")
 include(":core")
 include(":core:testing")
+include(":core:ui")
