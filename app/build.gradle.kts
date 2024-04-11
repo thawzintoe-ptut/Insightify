@@ -1,6 +1,9 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -48,6 +51,27 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+}
+
+ktlint {
+    android = true
+    ignoreFailures = false
+    disabledRules.set(
+        setOf(
+            "final-newline",
+            "no_wildcard_imports",
+            "experimental:annotation"
+        )
+    )
+    reporters {
+        reporter(ReporterType.CHECKSTYLE)
+    }
+    kotlinScriptAdditionalPaths {
+        include(fileTree("scripts/"))
+    }
+    filter {
+        exclude("**/generated/**")
     }
 }
 

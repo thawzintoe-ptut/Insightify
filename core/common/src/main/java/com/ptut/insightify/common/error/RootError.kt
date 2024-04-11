@@ -1,4 +1,4 @@
-package com.ptut.insightify.common
+package com.ptut.insightify.common.error
 
 typealias RootError = Error
 
