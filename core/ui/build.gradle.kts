@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = libs.versions.nameSpace.get()
+    namespace = "${libs.versions.nameSpace.get()}.ui"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -20,7 +20,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
