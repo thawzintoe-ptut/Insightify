@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.ptut.insightify"
-    compileSdk = 34
+    namespace = libs.versions.nameSpace.get()
+    compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.ptut.insightify"
-        minSdk = 21
-        targetSdk = 34
+        applicationId = libs.versions.nameSpace.get()
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
 

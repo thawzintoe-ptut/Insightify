@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "Insightify"
 include(":app")
- 
+include(":core")
+include(":core:testing")
