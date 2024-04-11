@@ -21,13 +21,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            isPseudoLocalesEnabled = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
         release {
             isShrinkResources = true
             isPseudoLocalesEnabled = true
