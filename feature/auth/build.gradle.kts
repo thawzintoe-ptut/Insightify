@@ -1,12 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt.android)
 }
 
 android {
-    namespace = "${libs.versions.nameSpace.get()}.common"
+    namespace = "${libs.versions.nameSpace.get()}.auth"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -14,10 +12,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildFeatures {
-        buildConfig = true
     }
 
     buildTypes {
@@ -39,26 +33,11 @@ android {
 }
 
 dependencies {
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    // KotlinX
-    implementation(libs.kotlinx.serialization)
-    implementation(libs.kotlinx.datetime)
-
-    // Retrofit
-    implementation(libs.retrofit.retrofit)
-    implementation(libs.retrofit.converter.json)
-    implementation(libs.retrofit.interceptor)
-
-    // OkHttp
-    api(libs.okhttp)
-
-    // Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.android.compiler)
-    ksp(libs.hilt.compiler)
 }
