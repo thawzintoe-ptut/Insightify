@@ -6,12 +6,12 @@ import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import com.ptut.insightify.BuildConfig
-import com.ptut.insightify.common.util.API_TIMEOUT
-import com.ptut.insightify.common.util.handleErrors
-import com.ptut.insightify.common.util.okHttpClient
-import com.ptut.insightify.common.util.retrofit
-import com.ptut.insightify.common.util.setLanguage
-import com.ptut.insightify.common.util.setPlatform
+import com.ptut.insightify.data.util.API_TIMEOUT
+import com.ptut.insightify.data.util.handleErrors
+import com.ptut.insightify.data.util.okHttpClient
+import com.ptut.insightify.data.util.retrofit
+import com.ptut.insightify.data.util.setLanguage
+import com.ptut.insightify.data.util.setPlatform
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,15 +40,15 @@ class ApiModule {
 
     @Provides
     fun provideChuckerInterceptor(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): ChuckerInterceptor {
         return ChuckerInterceptor.Builder(context)
             .collector(
                 ChuckerCollector(
                     context = context,
                     showNotification = true,
-                    retentionPeriod = RetentionManager.Period.ONE_HOUR
-                )
+                    retentionPeriod = RetentionManager.Period.ONE_HOUR,
+                ),
             )
             .maxContentLength(250_000L)
             .redactHeaders("Auth-Token", "Bearer")
@@ -60,7 +60,7 @@ class ApiModule {
     @Singleton
     fun provideRetrofit(
         json: Json,
-        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: ChuckerInterceptor,
     ) = retrofit {
         baseUrl(BuildConfig.API_URL)
         okHttpClient {
