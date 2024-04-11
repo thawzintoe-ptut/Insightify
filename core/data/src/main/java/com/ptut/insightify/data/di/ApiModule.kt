@@ -40,15 +40,15 @@ class ApiModule {
 
     @Provides
     fun provideChuckerInterceptor(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): ChuckerInterceptor {
         return ChuckerInterceptor.Builder(context)
             .collector(
                 ChuckerCollector(
                     context = context,
                     showNotification = true,
-                    retentionPeriod = RetentionManager.Period.ONE_HOUR
-                )
+                    retentionPeriod = RetentionManager.Period.ONE_HOUR,
+                ),
             )
             .maxContentLength(250_000L)
             .redactHeaders("Auth-Token", "Bearer")
@@ -60,7 +60,7 @@ class ApiModule {
     @Singleton
     fun provideRetrofit(
         json: Json,
-        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: ChuckerInterceptor,
     ) = retrofit {
         baseUrl(BuildConfig.API_URL)
         okHttpClient {
