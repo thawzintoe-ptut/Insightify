@@ -1,4 +1,4 @@
-package com.ptut.insightify
+package com.ptut.insightify.domain
 
 import org.junit.Test
 

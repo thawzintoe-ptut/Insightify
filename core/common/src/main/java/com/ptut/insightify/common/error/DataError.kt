@@ -1,4 +1,4 @@
-package com.ptut.insightify.common
+package com.ptut.insightify.common.error
 
 sealed interface DataError: Error {
     enum class Network: DataError {

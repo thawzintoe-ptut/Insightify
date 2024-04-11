@@ -1,4 +1,4 @@
-package com.ptut.insightify.common.util
+package com.ptut.insightify.data.util
 
 import com.ptut.insightify.BuildConfig
 import okhttp3.MediaType.Companion.toMediaType

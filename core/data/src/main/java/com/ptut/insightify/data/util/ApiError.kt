@@ -1,4 +1,4 @@
-package com.ptut.insightify.common.util
+package com.ptut.insightify.data.util
 
 import java.io.IOException
 
