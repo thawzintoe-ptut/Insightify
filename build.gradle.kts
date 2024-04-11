@@ -27,7 +27,8 @@ subprojects {
             setOf(
                 "final-newline",
                 "no_wildcard_imports",
-            ),
+                "import-ordering"
+            )
         )
         reporters {
             reporter(ReporterType.CHECKSTYLE)
@@ -41,4 +42,8 @@ subprojects {
         }
         debug.set(true)
     }
+}
+
+tasks.register("clean") {
+    delete(rootProject.buildDir)
 }
