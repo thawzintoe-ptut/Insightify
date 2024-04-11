@@ -5,7 +5,6 @@ import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.ptut.insightify.BuildConfig
 import com.ptut.insightify.data.util.API_TIMEOUT
 import com.ptut.insightify.data.util.handleErrors
 import com.ptut.insightify.data.util.okHttpClient
@@ -62,7 +61,7 @@ class ApiModule {
         json: Json,
         chuckerInterceptor: ChuckerInterceptor,
     ) = retrofit {
-        baseUrl(BuildConfig.API_URL)
+//        baseUrl(BuildConfig.API_URL)
         okHttpClient {
             setPlatform("Android")
             setLanguage {
