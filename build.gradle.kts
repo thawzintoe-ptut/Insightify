@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.ktlint.idea) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
 }
 
 subprojects {

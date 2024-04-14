@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Insightify</string>
+    <string name="invalid_email">Please enter a valid email address.</string>
+    <string name="password_too_short">Password should be at least 8 characters long.</string>
+    <string name="login_success">Login successful!</string>
+    <string name="validation_error">Validation error. Please check your input.</string>
+
+    // Login Screen
+    <string name="btn_login">Login</string>
+    <string name="text_input_email">Email</string>
+    <string name="text_input_password">Password</string>
 </resources>

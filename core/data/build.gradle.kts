@@ -13,7 +13,7 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "API_URL", "\"https://api.thecatapi.com/\"")
+        buildConfigField("String", "API_BASE_URL", "\"https://api.thecatapi.com/\"")
     }
 
     buildTypes {
@@ -21,17 +21,20 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = libs.versions.jvmTarget.get()
     }
+
     buildFeatures {
         buildConfig = true
     }

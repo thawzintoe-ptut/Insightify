@@ -9,3 +9,4 @@ ktlint_standard_import-ordering = disabled
 
 [api/*.{kt,kts}]
 ktlint_standard_indent = disabled
+ktlint_standard_backing-property-naming = disabled

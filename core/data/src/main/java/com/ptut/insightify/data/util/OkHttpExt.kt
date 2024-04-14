@@ -1,6 +1,6 @@
 package com.ptut.insightify.data.util
 
-import com.ptut.insightify.BuildConfig
+import com.ptut.insightify.common.BuildConfig
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
