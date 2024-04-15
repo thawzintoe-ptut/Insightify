@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +25,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -39,25 +42,34 @@ import com.ptut.insightify.auth.util.IdConstants.LOGIN_CONTENT
 import com.ptut.insightify.auth.util.IdConstants.LOGIN_ICON
 import com.ptut.insightify.auth.util.IdConstants.USER_EMAIL
 import com.ptut.insightify.auth.util.IdConstants.USER_PASSWORD
+import com.ptut.insightify.common.error.DataError
 import com.ptut.insightify.ui.Design
 import com.ptut.insightify.ui.components.Button
 import com.ptut.insightify.ui.components.PasswordField
 import com.ptut.insightify.ui.components.TextField
 import com.ptut.insightify.ui.inputvalidations.InputWrapper
+import com.ptut.insightify.ui.screens.ErrorScreen
 import com.ptut.insightify.ui.theme.Black
 import com.ptut.insightify.ui.theme.Black20
+import com.ptut.insightify.ui.util.ObserveAsEvents
 import com.ptut.insightify.ui.R as uiR
 
 @Composable
 fun LoginRoute(
-    onLoginClick: () -> Unit,
-    viewModel: LoginViewModel
+    viewModel: LoginViewModel,
+    onLoginCompleted: () -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val emailFocusRequester: FocusRequester = remember { FocusRequester() }
     val passwordFocusRequester: FocusRequester = remember { FocusRequester() }
+
+    ObserveAsEvents(flow = viewModel.navigationEvent) { navigationEvent ->
+        when (navigationEvent) {
+            is LoginViewModel.NavigationEvent.OnLoginCompleted -> onLoginCompleted()
+        }
+    }
 
     val onTextFieldFocusChanged = { focusTextFieldKey: FocusedTextFieldKey, isFocused: Boolean ->
         viewModel.onUiEvent(UiEvent.OnTextFieldFocusChanged(focusTextFieldKey, isFocused))
@@ -72,66 +84,72 @@ fun LoginRoute(
         viewModel.onUiEvent(UiEvent.OnPasswordImeActionClick)
     }
 
+    val onRetryClicked = {
+        viewModel.onUiEvent(UiEvent.RetryClicked)
+    }
+
     LaunchedEffect(Lifecycle.State.STARTED) {
         when (uiState.requestFocus) {
             FocusedTextFieldKey.EMAIL -> emailFocusRequester.requestFocus()
             FocusedTextFieldKey.PASSWORD -> passwordFocusRequester.requestFocus()
             FocusedTextFieldKey.NONE -> focusManager.clearFocus()
         }
-        if (uiState.isMoveFocused) {
-            focusManager.moveFocus(uiState.moveFocus)
-        }
-        if (uiState.isKeyboardVisible) {
-            keyboardController?.show()
-        } else {
-            keyboardController?.hide()
-        }
-        if (uiState.isFocusCleared) {
-            focusManager.clearFocus()
-            keyboardController?.hide()
-            onTextFieldFocusChanged(
-                FocusedTextFieldKey.NONE,
-                false
-            )
-        }
+    }
+
+    if (uiState.isMoveFocused) {
+        focusManager.moveFocus(uiState.moveFocus)
+    }
+    if (uiState.isKeyboardVisible) {
+        keyboardController?.show()
+    } else {
+        keyboardController?.hide()
+    }
+    if (uiState.isFocusCleared) {
+        focusManager.clearFocus()
+        keyboardController?.hide()
+        onTextFieldFocusChanged(FocusedTextFieldKey.NONE, false)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Image(
+        LoginScreenBackground(
             modifier =
-                Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.linearGradient(
-                            colors =
-                                listOf(
-                                    Black20,
-                                    Black
-                                )
-                        )
+                Modifier.fillMaxSize().background(
+                    Brush.linearGradient(
+                        colors =
+                            listOf(
+                                Black20,
+                                Black,
+                            ),
                     ),
-            painter = painterResource(id = uiR.drawable.ic_background),
-            contentDescription = "login background"
+                ),
         )
-        LoginScreen(
-            modifier =
-                Modifier.fillMaxSize(),
-            email = uiState.email,
-            password = uiState.password,
-            areInputsValid = uiState.areInputsValid,
-            emailFocusRequester = emailFocusRequester,
-            passwordFocusRequester = passwordFocusRequester,
-            onEmailChanged = viewModel::onEmailChanged,
-            onEmailImeAction = onEmailImeAction,
-            onPasswordChanged = viewModel::onPasswordChanged,
-            onPasswordImeAction = onPasswordImeAction,
-            onEmailFieldFocusChanged = onTextFieldFocusChanged,
-            onPasswordFieldFocusChanged = onTextFieldFocusChanged,
-            onLoginClicked = {
-                keyboardController?.hide()
-                onLoginClick()
-            }
-        )
+
+        if (!uiState.hasError) {
+            LoginScreen(
+                modifier = Modifier.fillMaxSize(),
+                email = uiState.email,
+                password = uiState.password,
+                areInputsValid = uiState.areInputsValid,
+                emailFocusRequester = emailFocusRequester,
+                passwordFocusRequester = passwordFocusRequester,
+                onEmailChanged = viewModel::onEmailChanged,
+                onEmailImeAction = onEmailImeAction,
+                onPasswordChanged = viewModel::onPasswordChanged,
+                onPasswordImeAction = onPasswordImeAction,
+                onEmailFieldFocusChanged = onTextFieldFocusChanged,
+                onPasswordFieldFocusChanged = onTextFieldFocusChanged,
+                onLoginClicked = {
+                    keyboardController?.hide()
+                    viewModel.onUiEvent(UiEvent.OnLoginClicked)
+                },
+            )
+        } else {
+            Design.Components.ErrorScreen(
+                modifier = Modifier.fillMaxSize(),
+                errorType = uiState.errorType ?: DataError.Network.UNKNOWN,
+                onActionButtonClick = onRetryClicked,
+            )
+        }
     }
 }
 
@@ -147,73 +165,73 @@ fun LoginScreen(
     onEmailImeAction: () -> Unit,
     onEmailFieldFocusChanged: (
         focusTextFieldKey: FocusedTextFieldKey,
-        isFocused: Boolean
+        isFocused: Boolean,
     ) -> Unit,
     onPasswordFieldFocusChanged: (
         focusTextFieldKey: FocusedTextFieldKey,
-        isFocused: Boolean
+        isFocused: Boolean,
     ) -> Unit,
     onPasswordChanged: (String) -> Unit,
     onPasswordImeAction: () -> Unit,
-    onLoginClicked: () -> Unit
+    onLoginClicked: () -> Unit,
 ) {
     ConstraintLayout(
         constraintSet = setLoginConstraints(),
-        modifier = modifier.padding(24.dp)
+        modifier = modifier.padding(24.dp),
     ) {
         Image(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .size(48.dp)
-                    .layoutId(LOGIN_ICON),
+            modifier = Modifier.fillMaxWidth().size(48.dp).layoutId(LOGIN_ICON),
             painter = painterResource(id = uiR.drawable.ic_logo_white),
-            contentDescription = "logo"
+            contentDescription = "logo",
         )
         Column(modifier = Modifier.layoutId(LOGIN_CONTENT)) {
             Design.Components.TextField(
                 modifier =
-                    Modifier
-                        .layoutId(USER_EMAIL)
-                        .focusRequester(emailFocusRequester)
+                    Modifier.layoutId(USER_EMAIL).focusRequester(emailFocusRequester)
                         .onFocusChanged { focusState ->
                             onEmailFieldFocusChanged(
                                 FocusedTextFieldKey.EMAIL,
-                                focusState.isFocused
+                                focusState.isFocused,
                             )
                         },
                 inputWrapper = email,
                 labelResId = uiR.string.text_input_email,
                 visualTransformation = VisualTransformation.None,
                 onValueChange = onEmailChanged,
-                onImeKeyAction = onEmailImeAction
+                onImeKeyAction = onEmailImeAction,
+                keyboardOptions =
+                    KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next,
+                    ),
             )
             Spacer(modifier = Modifier.height(10.dp))
             Design.Components.PasswordField(
                 modifier =
-                    Modifier.layoutId(USER_PASSWORD)
-                        .focusRequester(passwordFocusRequester)
+                    Modifier.layoutId(USER_PASSWORD).focusRequester(passwordFocusRequester)
                         .onFocusChanged { focusState ->
                             onPasswordFieldFocusChanged(
                                 FocusedTextFieldKey.PASSWORD,
-                                focusState.isFocused
+                                focusState.isFocused,
                             )
                         },
                 inputWrapper = password,
                 labelResId = uiR.string.text_input_password,
                 visualTransformation = PasswordVisualTransformation('●'),
                 onValueChange = onPasswordChanged,
-                onImeKeyAction = onPasswordImeAction
+                onImeKeyAction = onPasswordImeAction,
+                keyboardOptions =
+                    KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done,
+                    ),
             )
             Spacer(modifier = Modifier.height(10.dp))
             Design.Components.Button(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .layoutId(LOGIN_BTN),
+                modifier = Modifier.fillMaxWidth().layoutId(LOGIN_BTN),
                 text = stringResource(uiR.string.btn_login),
                 onClick = onLoginClicked,
-                enabled = areInputsValid
+                enabled = areInputsValid,
             )
         }
     }
@@ -240,4 +258,13 @@ fun setLoginConstraints(): ConstraintSet {
             height = Dimension.wrapContent
         }
     }
+}
+
+@Composable
+fun LoginScreenBackground(modifier: Modifier = Modifier) {
+    Image(
+        modifier = modifier,
+        painter = painterResource(id = uiR.drawable.ic_background),
+        contentDescription = "login background",
+    )
 }

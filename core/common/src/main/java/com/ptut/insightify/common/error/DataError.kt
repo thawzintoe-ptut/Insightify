@@ -1,17 +1,22 @@
 package com.ptut.insightify.common.error
 
-sealed interface DataError: Error {
-    enum class Network: DataError {
-        REQUEST_TIMEOUT,
-        TOO_MANY_REQUESTS,
-        NO_INTERNET,
-        PAYLOAD_TOO_LARGE,
-        SERVER_ERROR,
-        SERIALIZATION,
+sealed interface DataError : Error {
+    enum class Network : DataError {
+        NO_CONTENT,
+        BAD_REQUEST,
+        NOT_FOUND,
+        REQUEST_TIME_OUT,
+        GONE,
+        INTERNAL_SERVER_ERROR,
+        BAD_GATEWAY,
+        SERVICE_UNAVAILABLE,
+        FORBIDDEN,
         UNKNOWN,
-        UNAUTHORIZED
+        UNAUTHORIZED,
+        NETWORK_UNAVAILABLE
     }
-    enum class Local: DataError {
-        DISK_FULL
+
+    enum class Local : DataError {
+        DISK_FULL,
     }
 }

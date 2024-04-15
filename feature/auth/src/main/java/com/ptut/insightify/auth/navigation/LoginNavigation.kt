@@ -7,11 +7,11 @@ import com.ptut.insightify.auth.LoginRoute
 
 const val LOGIN = "login"
 
-fun NavGraphBuilder.login(onLoginClick: () -> Unit) {
+fun NavGraphBuilder.login(onLoginCompleted: () -> Unit) {
     composable(route = LOGIN) {
         LoginRoute(
             viewModel = hiltViewModel(),
-            onLoginClick = onLoginClick
+            onLoginCompleted = onLoginCompleted
         )
     }
 }

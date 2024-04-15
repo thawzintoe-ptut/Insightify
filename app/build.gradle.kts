@@ -1,8 +1,11 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -30,7 +33,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         flavorDimensions += "app"
@@ -67,9 +70,24 @@ android {
     }
 }
 
+ktlint {
+    android.set(false)
+    ignoreFailures.set(false)
+    reporters {
+        reporter(ReporterType.CHECKSTYLE)
+    }
+    filter {
+        exclude("**/style-violations.kt")
+        exclude("**/generated/**")
+        include("**/kotlin/**")
+    }
+}
+
 dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:auth"))
+    implementation(project(":core:data"))
+    implementation(project(":core:domain"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -87,9 +105,9 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    // Hilt
+    debugImplementation(libs.androidx.ui.test.manifest) // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation.compose)
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
 }

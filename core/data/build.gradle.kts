@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 android {
@@ -13,7 +14,6 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-        buildConfigField("String", "API_BASE_URL", "\"https://api.thecatapi.com/\"")
     }
 
     buildTypes {
@@ -42,6 +42,7 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
+    implementation(project(":core:domain"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -69,4 +70,11 @@ dependencies {
     // Chucker
     debugImplementation(libs.chucker.library)
     releaseImplementation(libs.chucker.no.op)
+
+    // timber
+    implementation(libs.timber)
+
+    // SharedPref
+    implementation(libs.preference.ktx)
+    implementation(libs.security.crypto)
 }

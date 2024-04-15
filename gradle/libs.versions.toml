@@ -35,6 +35,10 @@ constraintCompose = "1.0.1"
 lifecycle = "2.7.0"
 hilt-extensions = "1.2.0"
 kotlinPlugin = "1.9.23"
+timber = "5.0.1"
+datastore = "1.0.0"
+preference-ktx = "1.2.1"
+security-crypto = "1.1.0-alpha06"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -59,7 +63,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 material-icons = { group = "androidx.compose.material", name = "material-icons-extended" }
 #android-test
-androidx-test-core  = { module = "androidx.test:core", version.ref = "androidxTestCore" }
+androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 #hilt
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
@@ -82,11 +86,21 @@ chucker-no-op = { group = "com.github.chuckerteam.chucker", name = "library-no-o
 # Navigation
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation" }
 #accompanist
-accompanist-systemUiController = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist"}
+accompanist-systemUiController = { group = "com.google.accompanist", name = "accompanist-systemuicontroller", version.ref = "accompanist" }
 # Lifecycle
 lifecycle-viewmodel-scope = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
 lifecycle-compiler = { group = "androidx.lifecycle", name = "lifecycle-compiler", version.ref = "lifecycle" }
 lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+# Timber
+timber = { group = "com.jakewharton.timber", name = "timber", version.ref = "timber" }
+# DataStore
+datastore-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+# SharedPreferences
+preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference-ktx" }
+security-crypto = { module = "androidx.security:security-crypto", version.ref = "security-crypto" }
+# ktlint
+ktlint = { group = "org.jlleitschuh.gradle", name = "ktlint", version.ref = "ktlint" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -98,5 +112,6 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 ktlint-idea = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize",  version.ref = "kotlinPlugin"  }
+kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlinPlugin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 
