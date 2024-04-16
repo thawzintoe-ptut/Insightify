@@ -30,7 +30,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             BackHandler(onBack = ::finish)
             val navController = rememberNavController()
-            Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+            ) { innerPadding ->
                 SetupNavGraph(
                     navController = navController,
                     padding = innerPadding,

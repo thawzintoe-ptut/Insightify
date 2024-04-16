@@ -111,8 +111,13 @@ fun LoginRoute(
 
     Box(modifier = Modifier.fillMaxSize()) {
         LoginScreenBackground(
-            modifier =
-                Modifier.fillMaxSize().gradientBackground(
+            modifier = Modifier.fillMaxSize(),
+        )
+
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .gradientBackground(
                     topColor = Black20,
                     bottomColor = Black,
                 ),
@@ -144,6 +149,7 @@ fun LoginRoute(
                 onActionButtonClick = onRetryClicked,
             )
         }
+
     }
 }
 
@@ -174,55 +180,64 @@ fun LoginScreen(
         modifier = modifier.padding(24.dp),
     ) {
         Image(
-            modifier = Modifier.fillMaxWidth().size(48.dp).layoutId(LOGIN_ICON),
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(48.dp)
+                .layoutId(LOGIN_ICON),
             painter = painterResource(id = uiR.drawable.ic_logo_white),
             contentDescription = "logo",
         )
         Column(modifier = Modifier.layoutId(LOGIN_CONTENT)) {
             Design.Components.TextField(
                 modifier =
-                    Modifier.layoutId(USER_EMAIL).focusRequester(emailFocusRequester)
-                        .onFocusChanged { focusState ->
-                            onEmailFieldFocusChanged(
-                                FocusedTextFieldKey.EMAIL,
-                                focusState.isFocused,
-                            )
-                        },
+                Modifier
+                    .layoutId(USER_EMAIL)
+                    .focusRequester(emailFocusRequester)
+                    .onFocusChanged { focusState ->
+                        onEmailFieldFocusChanged(
+                            FocusedTextFieldKey.EMAIL,
+                            focusState.isFocused,
+                        )
+                    },
                 inputWrapper = email,
                 labelResId = uiR.string.text_input_email,
                 visualTransformation = VisualTransformation.None,
                 onValueChange = onEmailChanged,
                 onImeKeyAction = onEmailImeAction,
                 keyboardOptions =
-                    KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next,
-                    ),
+                KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Email,
+                    imeAction = ImeAction.Next,
+                ),
             )
             Spacer(modifier = Modifier.height(10.dp))
             Design.Components.PasswordField(
                 modifier =
-                    Modifier.layoutId(USER_PASSWORD).focusRequester(passwordFocusRequester)
-                        .onFocusChanged { focusState ->
-                            onPasswordFieldFocusChanged(
-                                FocusedTextFieldKey.PASSWORD,
-                                focusState.isFocused,
-                            )
-                        },
+                Modifier
+                    .layoutId(USER_PASSWORD)
+                    .focusRequester(passwordFocusRequester)
+                    .onFocusChanged { focusState ->
+                        onPasswordFieldFocusChanged(
+                            FocusedTextFieldKey.PASSWORD,
+                            focusState.isFocused,
+                        )
+                    },
                 inputWrapper = password,
                 labelResId = uiR.string.text_input_password,
                 visualTransformation = PasswordVisualTransformation('●'),
                 onValueChange = onPasswordChanged,
                 onImeKeyAction = onPasswordImeAction,
                 keyboardOptions =
-                    KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done,
-                    ),
+                KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Password,
+                    imeAction = ImeAction.Done,
+                ),
             )
             Spacer(modifier = Modifier.height(10.dp))
             Design.Components.Button(
-                modifier = Modifier.fillMaxWidth().layoutId(LOGIN_BTN),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .layoutId(LOGIN_BTN),
                 text = stringResource(uiR.string.btn_login),
                 onClick = onLoginClicked,
                 enabled = areInputsValid,

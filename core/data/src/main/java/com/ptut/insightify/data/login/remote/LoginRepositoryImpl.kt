@@ -1,4 +1,4 @@
-package com.ptut.insightify.data.login.remote.login
+package com.ptut.insightify.data.login.remote
 
 import com.ptut.insightify.common.error.DataError
 import com.ptut.insightify.common.error.Result

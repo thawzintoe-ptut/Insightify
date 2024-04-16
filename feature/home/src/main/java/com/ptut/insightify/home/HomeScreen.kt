@@ -1,7 +1,6 @@
 package com.ptut.insightify.home
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,55 +12,109 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import coil.compose.AsyncImage
+import com.ptut.insightify.domain.survey.model.Survey
+import com.ptut.insightify.home.HomeViewModel.UiEvent
+import com.ptut.insightify.ui.Design
 import com.ptut.insightify.ui.InsightifyIcons.KeyboardArrowRight
-import com.ptut.insightify.ui.R
+import com.ptut.insightify.ui.components.ShimmerLoadingIndicator
+import com.ptut.insightify.ui.screens.ErrorScreen
+import com.ptut.insightify.ui.theme.Black
+import com.ptut.insightify.ui.theme.Black01
 import com.ptut.insightify.ui.theme.neuzeitFontFamily
+import com.ptut.insightify.ui.util.gradientBackground
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeRoute(innerPaddingValues: PaddingValues) {
-    val pagerState = rememberPagerState(pageCount = { 3 })
-    val indicatorScrollState = rememberLazyListState()
+fun HomeRoute(
+    viewModel: HomeViewModel,
+    innerPaddingValues: PaddingValues,
+    onDetailContinueClicked: (String) -> Unit = {},
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val surveys = uiState.surveys.collectAsLazyPagingItems()
 
-    HomeScreenPager(
-        pagerState = pagerState,
-        indicatorScrollState = indicatorScrollState,
-        innerPaddingValues = innerPaddingValues,
-    )
+    Box(
+        Modifier
+            .fillMaxSize(),
+    ) {
+        if (surveys.itemCount == 0) {
+            Design.Components.ShimmerLoadingIndicator(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black),
+            )
+        } else {
+            HomeScreenPager(
+                isRefreshing = uiState.isLoading,
+                innerPaddingValues = innerPaddingValues,
+                profileUrl = uiState.profileImageUrl,
+                currentDate = uiState.currentDate,
+                onDetailContinueClicked = onDetailContinueClicked,
+                surveyItems = surveys,
+                onRefresh = {
+                    viewModel.onUiEvent(UiEvent.RefreshSurveyList)
+                },
+            )
+        }
+        if (uiState.hasError) {
+            uiState.errorType?.let {
+                Design.Components.ErrorScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    errorType = it,
+                    onActionButtonClick = {
+                        viewModel.onUiEvent(UiEvent.OnErrorRetryClicked)
+                    },
+                )
+            }
+        }
+    }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenPager(
-    pagerState: PagerState,
-    indicatorScrollState: LazyListState,
+    isRefreshing: Boolean,
+    profileUrl: String,
+    currentDate: String,
+    surveyItems: LazyPagingItems<Survey>,
     innerPaddingValues: PaddingValues = PaddingValues(20.dp),
+    onDetailContinueClicked: (String) -> Unit = {},
+    onRefresh: () -> Unit,
 ) {
+    val pullRefreshState = rememberPullToRefreshState()
+    val pagerState = rememberPagerState(pageCount = { surveyItems.itemCount })
+    val indicatorScrollState = rememberLazyListState()
+
     LaunchedEffect(pagerState.currentPage) {
         val currentPage = pagerState.currentPage
         val size = indicatorScrollState.layoutInfo.visibleItemsInfo.size
@@ -77,87 +130,133 @@ fun HomeScreenPager(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(pullRefreshState.nestedScrollConnection),
+    ) {
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
-            HomeScreenBackground(page)
+            surveyItems[page]?.let { survey ->
+                HomeScreenBackground(
+                    survey.coverImageUrl,
+                )
+            }
         }
 
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .gradientBackground(
+                    topColor = Black01,
+                    bottomColor = Black,
+                ),
+        )
+
         TopProfileContent(
-            modifier =
-                Modifier.padding(innerPaddingValues).padding(20.dp)
-                    .align(Alignment.TopStart),
+            modifier = Modifier
+                .padding(innerPaddingValues)
+                .padding(20.dp)
+                .align(Alignment.TopStart),
+            profileUrl = profileUrl,
+            currentDate = currentDate,
         )
 
         Column(
-            Modifier.padding(innerPaddingValues).align(Alignment.BottomCenter),
+            Modifier
+                .padding(innerPaddingValues)
+                .align(Alignment.BottomCenter),
         ) {
-            IndicatorRow(currentPage = pagerState.currentPage, pageCount = pagerState.pageCount)
-            BottomDescriptionContent(
+            IndicatorRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 60.dp, bottom = 16.dp),
                 currentPage = pagerState.currentPage,
+                indicatorCount = surveyItems.itemCount,
+            )
+            BottomDescriptionContent(
+                descTitle = surveyItems[pagerState.currentPage]?.title ?: "",
+                description = surveyItems[pagerState.currentPage]?.description ?: "",
+                onDetailContinueClicked = onDetailContinueClicked,
             )
         }
+
+        if (pullRefreshState.isRefreshing) {
+            LaunchedEffect(key1 = true) {
+                onRefresh()
+            }
+        }
+
+        LaunchedEffect(isRefreshing) {
+            if (isRefreshing) {
+                pullRefreshState.startRefresh()
+            } else {
+                pullRefreshState.endRefresh()
+            }
+        }
+
+        PullToRefreshContainer(
+            state = pullRefreshState,
+            modifier = Modifier.align(Alignment.TopCenter),
+        )
     }
 }
 
 @Composable
-fun TopProfileContent(modifier: Modifier) {
+fun TopProfileContent(
+    modifier: Modifier,
+    profileUrl: String,
+    currentDate: String,
+) {
     Column(modifier = modifier) {
         Text(
-            text = "Monday June 2023",
+            text = currentDate,
             style =
-                MaterialTheme.typography.titleSmall.copy(
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = Color.White,
-                    fontFamily = neuzeitFontFamily,
-                ),
+            MaterialTheme.typography.titleSmall.copy(
+                fontSize = 13.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White,
+                fontFamily = neuzeitFontFamily,
+            ),
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "Good Morning",
                 style =
-                    MaterialTheme.typography.titleLarge.copy(
-                        fontSize = 34.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.White,
-                        fontFamily = neuzeitFontFamily,
-                    ),
+                MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = Color.White,
+                    fontFamily = neuzeitFontFamily,
+                ),
             )
             Spacer(modifier = Modifier.weight(1f))
-            Image(
-                painter = painterResource(id = R.drawable.ic_dummy_profile),
+            AsyncImage(
+                model = profileUrl,
                 contentDescription = "profile image",
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.size(36.dp).clip(CircleShape),
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(CircleShape),
             )
         }
     }
 }
 
 @Composable
-fun BottomDescriptionContent(currentPage: Int) {
-    val titles =
-        listOf(
-            "Welcome to Insightify",
-            "Career training and development",
-            "Inclusion and Belonging",
-        )
-    val descriptions =
-        listOf(
-            "We would like to know how you feel about our work from home...",
-            "We would like to know what are your goals and skills you wanted...",
-            "Building a workplace culture that prioritizes belonging and inclusio...",
-        )
-
+fun BottomDescriptionContent(
+    descTitle: String,
+    description: String,
+    onDetailContinueClicked: (String) -> Unit,
+) {
     Text(
-        text = titles.getOrNull(currentPage) ?: "",
+        text = descTitle,
         style =
-            MaterialTheme.typography.titleLarge.copy(
-                fontSize = 32.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White,
-            ),
+        MaterialTheme.typography.titleLarge.copy(
+            fontSize = 32.sp,
+            fontWeight = FontWeight.ExtraBold,
+            color = Color.White,
+        ),
         lineHeight = 40.sp,
         modifier = Modifier.padding(horizontal = 20.dp),
     )
@@ -165,39 +264,41 @@ fun BottomDescriptionContent(currentPage: Int) {
     ConstraintLayout(Modifier.fillMaxWidth()) {
         val (title, icon) = createRefs()
         Text(
-            text = descriptions.getOrNull(currentPage) ?: "",
+            text = description,
             style =
-                MaterialTheme.typography.titleMedium.copy(
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Normal,
-                    color = Color.White,
-                ),
+            MaterialTheme.typography.titleMedium.copy(
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Normal,
+                color = Color.White,
+            ),
             modifier =
-                Modifier.constrainAs(title) {
-                    top.linkTo(parent.top)
-                    start.linkTo(parent.start, margin = 20.dp)
-                    end.linkTo(icon.start, margin = 20.dp)
-                    bottom.linkTo(parent.bottom, margin = 20.dp)
-                    width = Dimension.fillToConstraints
-                },
+            Modifier.constrainAs(title) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start, margin = 20.dp)
+                end.linkTo(icon.start, margin = 20.dp)
+                bottom.linkTo(parent.bottom, margin = 20.dp)
+                width = Dimension.fillToConstraints
+            },
         )
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                onDetailContinueClicked("detail")
+            },
             modifier =
-                Modifier.constrainAs(icon) {
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end, margin = 20.dp)
-                    bottom.linkTo(parent.bottom, margin = 20.dp)
-                    width = Dimension.value(56.dp)
-                    height = Dimension.value(56.dp)
-                },
+            Modifier.constrainAs(icon) {
+                top.linkTo(parent.top)
+                end.linkTo(parent.end, margin = 20.dp)
+                bottom.linkTo(parent.bottom, margin = 20.dp)
+                width = Dimension.value(56.dp)
+                height = Dimension.value(56.dp)
+            },
             colors =
-                IconButtonColors(
-                    contentColor = Color.Black,
-                    containerColor = Color.White,
-                    disabledContentColor = Color.Gray,
-                    disabledContainerColor = Color.White,
-                ),
+            IconButtonColors(
+                contentColor = Color.Black,
+                containerColor = Color.White,
+                disabledContentColor = Color.Gray,
+                disabledContainerColor = Color.White,
+            ),
         ) {
             Icon(
                 imageVector = KeyboardArrowRight,
@@ -209,21 +310,25 @@ fun BottomDescriptionContent(currentPage: Int) {
 
 @Composable
 fun IndicatorRow(
+    modifier: Modifier = Modifier,
     currentPage: Int,
-    pageCount: Int,
+    indicatorCount: Int,
 ) {
     LazyRow(
         state = rememberLazyListState(),
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
+        modifier = modifier,
     ) {
-        repeat(pageCount) { iteration ->
+        repeat(indicatorCount) { iteration ->
             val color = if (currentPage == iteration) Color.DarkGray else Color.LightGray
             item {
                 val size = if (currentPage == iteration) 10.dp else 6.dp
                 Spacer(
                     modifier =
-                        Modifier.padding(horizontal = 4.dp).size(size).clip(CircleShape)
-                            .background(color),
+                    Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(size)
+                        .clip(CircleShape)
+                        .background(color),
                 )
             }
         }
@@ -231,17 +336,16 @@ fun IndicatorRow(
 }
 
 @Composable
-fun HomeScreenBackground(screenCurrentPage: Int) {
-    Image(
-        modifier = Modifier.fillMaxSize(),
-        painter =
-            painterResource(
-                when (screenCurrentPage) {
-                    0 -> R.drawable.ic_survey_background_1
-                    1 -> R.drawable.ic_survey_background_2
-                    else -> R.drawable.ic_survey_background_3
-                },
+fun HomeScreenBackground(imageUrl: String) {
+    AsyncImage(
+        modifier = Modifier
+            .fillMaxSize()
+            .gradientBackground(
+                topColor = Black01,
+                bottomColor = Black,
             ),
+        model = imageUrl,
         contentDescription = "home background",
+        contentScale = ContentScale.Crop,
     )
 }

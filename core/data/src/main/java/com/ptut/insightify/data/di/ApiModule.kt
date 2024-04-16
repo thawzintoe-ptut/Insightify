@@ -14,12 +14,15 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import com.ptut.insightify.common.BuildConfig
 import com.ptut.insightify.data.login.local.user.UserTokenSharedPreferencesProvider
 import com.ptut.insightify.data.login.service.LoginApiService
+import com.ptut.insightify.data.profile.service.ProfileApiService
+import com.ptut.insightify.data.survey.service.SurveyApiService
 import com.ptut.insightify.data.util.API_TIMEOUT
 import com.ptut.insightify.data.util.handleErrors
 import com.ptut.insightify.data.util.okHttpClient
 import com.ptut.insightify.data.util.refreshToken.AccessTokenInterceptor
 import com.ptut.insightify.data.util.refreshToken.TokenRefreshInterceptor
 import com.ptut.insightify.data.util.retrofit
+import com.ptut.insightify.data.util.setAuthorizationToken
 import com.ptut.insightify.data.util.setLanguage
 import com.ptut.insightify.data.util.setPlatform
 import com.ptut.insightify.domain.user.repository.UserTokenProvider
@@ -45,25 +48,22 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideMasterKey(
-        @ApplicationContext context: Context
-    ): MasterKey = MasterKey.Builder(context)
-        .setKeyGenParameterSpec(
+        @ApplicationContext context: Context,
+    ): MasterKey =
+        MasterKey.Builder(context).setKeyGenParameterSpec(
             KeyGenParameterSpec.Builder(
                 MasterKey.DEFAULT_MASTER_KEY_ALIAS,
-                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
-            )
-                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
+            ).setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                .setKeySize(MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE)
-                .build()
-        )
-        .build()
+                .setKeySize(MasterKey.DEFAULT_AES_GCM_MASTER_KEY_SIZE).build(),
+        ).build()
 
     @Provides
     @Singleton
     fun provideTokenProvider(
         @ApplicationContext context: Context,
-        masterKey: MasterKey
+        masterKey: MasterKey,
     ): UserTokenProvider {
         return UserTokenSharedPreferencesProvider(
             EncryptedSharedPreferences.create(
@@ -71,8 +71,8 @@ object ApiModule {
                 ENCRYPTED_PREFERENCES_NAME,
                 masterKey,
                 EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            )
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM,
+            ),
         )
     }
 
@@ -103,29 +103,24 @@ object ApiModule {
     @Provides
     @Singleton
     fun provideChuckerInterceptor(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): ChuckerInterceptor {
-        return ChuckerInterceptor.Builder(context)
-            .collector(
-                ChuckerCollector(
-                    context = context,
-                    showNotification = true,
-                    retentionPeriod = RetentionManager.Period.ONE_HOUR
-                )
-            )
-            .maxContentLength(250_000L)
-            .redactHeaders("Auth-Token", "Bearer")
-            .alwaysReadResponseBody(true)
-            .build()
+        return ChuckerInterceptor.Builder(context).collector(
+            ChuckerCollector(
+                context = context,
+                showNotification = true,
+                retentionPeriod = RetentionManager.Period.ONE_HOUR,
+            ),
+        ).maxContentLength(250_000L).redactHeaders("Auth-Token", "Bearer")
+            .alwaysReadResponseBody(true).build()
     }
 
     @Provides
     @Singleton
     fun provideRetrofit(
         json: Json,
-        accessTokenInterceptor: AccessTokenInterceptor,
-        tokenRefreshInterceptor: TokenRefreshInterceptor,
-        chuckerInterceptor: ChuckerInterceptor
+        chuckerInterceptor: ChuckerInterceptor,
+        userTokenProvider: UserTokenProvider,
     ) = retrofit {
         baseUrl(BuildConfig.API_BASE_URL)
         okHttpClient {
@@ -133,9 +128,17 @@ object ApiModule {
             setLanguage {
                 Locale.getDefault().toLanguageTag()
             }
-            addInterceptor(chuckerInterceptor)
-            addInterceptor(accessTokenInterceptor)
-            addInterceptor(tokenRefreshInterceptor)
+            if (BuildConfig.DEBUG) {
+                addInterceptor(chuckerInterceptor)
+            }
+            setAuthorizationToken(
+                token = {
+                    userTokenProvider.getAccessToken()
+                },
+                refreshToken = {
+                    userTokenProvider.getRefreshToken()
+                },
+            )
             handleErrors()
             connectTimeout(API_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(API_TIMEOUT, TimeUnit.SECONDS)
@@ -148,5 +151,17 @@ object ApiModule {
     @Singleton
     fun provideLoginApiService(retrofit: Retrofit): LoginApiService {
         return retrofit.create(LoginApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSurveyApiService(retrofit: Retrofit): SurveyApiService {
+        return retrofit.create(SurveyApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileApiService(retrofit: Retrofit): ProfileApiService {
+        return retrofit.create(ProfileApiService::class.java)
     }
 }

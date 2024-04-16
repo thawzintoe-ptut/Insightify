@@ -93,5 +93,14 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.scope)
     implementation(libs.lifecycle.compiler)
     implementation(libs.lifecycle.runtime.compose) // kotlinx serialization
-    implementation(libs.kotlinx.serialization)
+    implementation(libs.kotlinx.serialization) // paging
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.runtime)
+
+    // coil
+    implementation(libs.coil)
+    // shimmer
+    implementation(libs.shimmer)
+    // swipe refresh layout
+    implementation(libs.accompanist.swiperefresh)
 }

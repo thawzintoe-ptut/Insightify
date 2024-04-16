@@ -44,7 +44,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
@@ -56,4 +55,7 @@ dependencies {
 
     // timber
     implementation(libs.timber)
+
+    // paging
+    implementation(libs.androidx.paging)
 }

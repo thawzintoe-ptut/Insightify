@@ -40,13 +40,12 @@ fun SetupNavGraph(
             }
         }
 
-        login(
-            onLoginCompleted = {
-                navController.navigate(
-                    UiEvent.Navigate(Screen.Home.route),
-                )
-            },
-        )
-        home(innerPaddingValues = padding)
+        login(onLoginCompleted = {
+            navController.navigate(
+                UiEvent.Navigate(Screen.Home.route),
+            )
+        })
+
+        home(innerPaddingValues = padding, onDetailContinueClicked = { surveyId -> })
     }
 }

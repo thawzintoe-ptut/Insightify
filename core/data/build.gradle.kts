@@ -21,7 +21,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -77,4 +77,7 @@ dependencies {
     // SharedPref
     implementation(libs.preference.ktx)
     implementation(libs.security.crypto)
+
+    // paging
+    implementation(libs.androidx.paging)
 }
