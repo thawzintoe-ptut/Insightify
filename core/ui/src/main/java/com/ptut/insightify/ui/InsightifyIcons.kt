@@ -1,6 +1,7 @@
 package com.ptut.insightify.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Bookmarks
@@ -29,4 +30,5 @@ object InsightifyIcons {
     val Person = Icons.Rounded.Person
     val Search = Icons.Rounded.Search
     val Settings = Icons.Rounded.Settings
+    val KeyboardArrowRight = Icons.AutoMirrored.Filled.KeyboardArrowRight
 }

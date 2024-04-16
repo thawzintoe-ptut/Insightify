@@ -1,7 +1,6 @@
 package com.ptut.insightify.auth
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -52,6 +50,7 @@ import com.ptut.insightify.ui.screens.ErrorScreen
 import com.ptut.insightify.ui.theme.Black
 import com.ptut.insightify.ui.theme.Black20
 import com.ptut.insightify.ui.util.ObserveAsEvents
+import com.ptut.insightify.ui.util.gradientBackground
 import com.ptut.insightify.ui.R as uiR
 
 @Composable
@@ -113,14 +112,9 @@ fun LoginRoute(
     Box(modifier = Modifier.fillMaxSize()) {
         LoginScreenBackground(
             modifier =
-                Modifier.fillMaxSize().background(
-                    Brush.linearGradient(
-                        colors =
-                            listOf(
-                                Black20,
-                                Black,
-                            ),
-                    ),
+                Modifier.fillMaxSize().gradientBackground(
+                    topColor = Black20,
+                    bottomColor = Black,
                 ),
         )
 

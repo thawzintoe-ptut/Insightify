@@ -31,7 +31,10 @@ class MainActivity : ComponentActivity() {
             BackHandler(onBack = ::finish)
             val navController = rememberNavController()
             Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                SetupNavGraph(navController = navController)
+                SetupNavGraph(
+                    navController = navController,
+                    padding = innerPadding,
+                )
             }
             WindowCompat.setDecorFitsSystemWindows(window, false)
         }
@@ -41,7 +44,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BackHandler(
     enabled: Boolean = true,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val currentOnBack by rememberUpdatedState(onBack)
     val backCallback =
