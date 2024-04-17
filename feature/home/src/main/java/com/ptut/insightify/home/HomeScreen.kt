@@ -17,14 +17,11 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,15 +54,12 @@ import com.ptut.insightify.ui.util.gradientBackground
 fun HomeRoute(
     viewModel: HomeViewModel,
     innerPaddingValues: PaddingValues,
-    onDetailContinueClicked: (String) -> Unit = {},
+    onDetailContinueClicked: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val surveys = uiState.surveys.collectAsLazyPagingItems()
 
-    Box(
-        Modifier
-            .fillMaxSize(),
-    ) {
+    Box(Modifier.fillMaxSize()) {
         if (surveys.itemCount == 0) {
             Design.Components.ShimmerLoadingIndicator(
                 modifier = Modifier
@@ -82,7 +75,9 @@ fun HomeRoute(
                 onDetailContinueClicked = onDetailContinueClicked,
                 surveyItems = surveys,
                 onRefresh = {
-                    viewModel.onUiEvent(UiEvent.RefreshSurveyList)
+                    viewModel.onUiEvent(
+                        UiEvent.RefreshSurveyList,
+                    )
                 },
             )
         }
@@ -92,7 +87,9 @@ fun HomeRoute(
                     modifier = Modifier.fillMaxSize(),
                     errorType = it,
                     onActionButtonClick = {
-                        viewModel.onUiEvent(UiEvent.OnErrorRetryClicked)
+                        viewModel.onUiEvent(
+                            UiEvent.OnErrorRetryClicked,
+                        )
                     },
                 )
             }
@@ -100,7 +97,7 @@ fun HomeRoute(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenPager(
     isRefreshing: Boolean,
@@ -111,7 +108,6 @@ fun HomeScreenPager(
     onDetailContinueClicked: (String) -> Unit = {},
     onRefresh: () -> Unit,
 ) {
-    val pullRefreshState = rememberPullToRefreshState()
     val pagerState = rememberPagerState(pageCount = { surveyItems.itemCount })
     val indicatorScrollState = rememberLazyListState()
 
@@ -130,12 +126,11 @@ fun HomeScreenPager(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .nestedScroll(pullRefreshState.nestedScrollConnection),
-    ) {
-        HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+    Box(modifier = Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+        ) { page ->
             surveyItems[page]?.let { survey ->
                 HomeScreenBackground(
                     survey.coverImageUrl,
@@ -179,25 +174,6 @@ fun HomeScreenPager(
                 onDetailContinueClicked = onDetailContinueClicked,
             )
         }
-
-        if (pullRefreshState.isRefreshing) {
-            LaunchedEffect(key1 = true) {
-                onRefresh()
-            }
-        }
-
-        LaunchedEffect(isRefreshing) {
-            if (isRefreshing) {
-                pullRefreshState.startRefresh()
-            } else {
-                pullRefreshState.endRefresh()
-            }
-        }
-
-        PullToRefreshContainer(
-            state = pullRefreshState,
-            modifier = Modifier.align(Alignment.TopCenter),
-        )
     }
 }
 
