@@ -13,9 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
-class LoginRepositoryImpl
-@Inject
-constructor(
+class LoginRepositoryImpl @Inject constructor(
     private val loginApiService: LoginApiService,
 ) : LoginRepository {
     override fun fetchSurveyToken(

@@ -9,7 +9,7 @@ import java.net.UnknownHostException
 
 suspend fun handleError(
     exception: Throwable,
-    send: suspend (Result.Error<Nothing, DataError.Network>) -> Unit,
+    send: suspend (Result.Error<DataError.Network>) -> Unit,
 ) {
     when (exception) {
         is ApiException -> {

@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.ktlint.idea) apply false
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.kotlinx.serialization) apply false
+    alias(libs.plugins.kover) apply false
 }
 
 subprojects {

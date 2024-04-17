@@ -33,8 +33,8 @@ class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val loginUserUseCase: LoginUserUseCase,
 ) : ViewModel() {
-    private val userEmail = savedStateHandle.getStateFlow(USER_EMAIL, InputWrapper())
-    private val userPassword = savedStateHandle.getStateFlow(USER_PASSWORD, InputWrapper())
+    private val userEmail = savedStateHandle.get<InputWrapper>(USER_EMAIL) ?: InputWrapper()
+    private val userPassword = savedStateHandle.get<InputWrapper>(USER_PASSWORD) ?: InputWrapper()
     private var focusedTextField = savedStateHandle[FOCUSED_TEXT_FIELD] ?: FocusedTextFieldKey.EMAIL
         set(value) {
             field = value
@@ -99,7 +99,7 @@ class LoginViewModel @Inject constructor(
 
     fun handleEmailChanged(input: String) {
         val errorId = InputValidator.getEmailErrorIdOrNull(input)
-        savedStateHandle[USER_EMAIL] = userEmail.value.copy(
+        savedStateHandle[USER_EMAIL] = userEmail.copy(
             value = input,
             errorId = errorId,
         )
@@ -108,7 +108,7 @@ class LoginViewModel @Inject constructor(
 
     fun handlePasswordChanged(input: String) {
         val errorId = InputValidator.getPasswordErrorIdOrNull(input)
-        savedStateHandle[USER_PASSWORD] = userPassword.value.copy(
+        savedStateHandle[USER_PASSWORD] = userPassword.copy(
             value = input,
             errorId = errorId,
         )
@@ -118,10 +118,10 @@ class LoginViewModel @Inject constructor(
     private fun updateUiState() {
         _uiState.update { currentState ->
             currentState.copy(
-                email = userEmail.value,
-                password = userPassword.value,
-                areInputsValid = isEmailValid(userEmail.value) &&
-                        isPasswordValid(userPassword.value),
+                email = userEmail,
+                password = userPassword,
+                areInputsValid = isEmailValid(userEmail) &&
+                        isPasswordValid(userPassword),
                 hasError = false,
                 isKeyboardVisible = true,
                 errorType = null,
@@ -134,11 +134,17 @@ class LoginViewModel @Inject constructor(
         isFocused: Boolean,
     ) {
         focusedTextField = if (isFocused) key else FocusedTextFieldKey.NONE
+        _uiState.update {
+            it.copy(
+                isMoveFocused = true,
+                requestFocus = key,
+            )
+        }
     }
 
     private fun onLoginClicked() {
-        val email = userEmail.value.value
-        val password = userPassword.value.value
+        val email = userEmail.value
+        val password = userPassword.value
         _uiState.update { it.copy(isLoading = true, isKeyboardVisible = false) }
         loginUserUseCase(email, password)
             .onEach { result ->
