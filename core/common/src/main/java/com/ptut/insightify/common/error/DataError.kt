@@ -16,7 +16,5 @@ sealed interface DataError : Error {
         NETWORK_UNAVAILABLE
     }
 
-    enum class Local : DataError {
-        DISK_FULL,
-    }
+    enum class Local : DataError
 }

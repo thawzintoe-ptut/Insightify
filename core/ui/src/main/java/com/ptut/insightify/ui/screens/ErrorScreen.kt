@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -80,13 +81,15 @@ fun Design.Components.ErrorScreen(
         Spacer(modifier = Modifier.height(30.dp))
         Design.Components.Button(
             modifier =
-                Modifier.fillMaxWidth()
-                    .semantics {
-                        role = Role.Button
-                    },
+            Modifier
+                .fillMaxWidth()
+                .semantics {
+                    role = Role.Button
+                },
             text = stringResource(id = R.string.btn_retry),
+            colors = ButtonDefaults.filledTonalButtonColors(),
             onClick = onActionButtonClick,
-            enabled = true
+            enabled = true,
         )
     }
 }

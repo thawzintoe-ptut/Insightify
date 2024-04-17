@@ -19,8 +19,6 @@ import com.ptut.insightify.data.survey.service.SurveyApiService
 import com.ptut.insightify.data.util.API_TIMEOUT
 import com.ptut.insightify.data.util.handleErrors
 import com.ptut.insightify.data.util.okHttpClient
-import com.ptut.insightify.data.util.refreshToken.AccessTokenInterceptor
-import com.ptut.insightify.data.util.refreshToken.TokenRefreshInterceptor
 import com.ptut.insightify.data.util.retrofit
 import com.ptut.insightify.data.util.setAuthorizationToken
 import com.ptut.insightify.data.util.setLanguage
@@ -76,18 +74,6 @@ object ApiModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideAccessTokenInterceptor(tokenProvider: UserTokenProvider): AccessTokenInterceptor {
-        return AccessTokenInterceptor(tokenProvider)
-    }
-
-    @Provides
-    @Singleton
-    fun provideTokenRefreshInterceptor(tokenProvider: UserTokenProvider): TokenRefreshInterceptor {
-        return TokenRefreshInterceptor(tokenProvider)
-    }
-
     @OptIn(ExperimentalSerializationApi::class)
     @Provides
     @Singleton
@@ -105,13 +91,15 @@ object ApiModule {
     fun provideChuckerInterceptor(
         @ApplicationContext context: Context,
     ): ChuckerInterceptor {
-        return ChuckerInterceptor.Builder(context).collector(
-            ChuckerCollector(
-                context = context,
-                showNotification = true,
-                retentionPeriod = RetentionManager.Period.ONE_HOUR,
-            ),
-        ).maxContentLength(250_000L).redactHeaders("Auth-Token", "Bearer")
+        return ChuckerInterceptor.Builder(context)
+            .collector(
+                ChuckerCollector(
+                    context = context,
+                    showNotification = true,
+                    retentionPeriod = RetentionManager.Period.ONE_HOUR,
+                ),
+            ).maxContentLength(250_000L)
+            .redactHeaders("Auth-Token", "Bearer")
             .alwaysReadResponseBody(true).build()
     }
 

@@ -13,32 +13,14 @@ suspend fun handleError(
 ) {
     when (exception) {
         is ApiException -> {
-            val message =
-                if (exception.errorType != null) {
-                    "${exception.errorType.code} - ${exception.errorType.description}"
-                } else {
-                    "Unknown"
-                }
-            if (exception.errorType == ApiErrorType.Unauthorized) {
-                Timber.d(message = message, t = exception)
-            } else {
-                Timber.w(message = message, t = exception)
-            }
+            val message = exception.errorType?.let {
+                "${it.code} - ${it.description}"
+            } ?: "Unknown Error"
+            logError(exception, message)
+
             send(
                 Result.Error(
-                    error = when (exception.errorType) {
-                        ApiErrorType.NoContent -> DataError.Network.NO_CONTENT
-                        ApiErrorType.BadRequest -> DataError.Network.BAD_REQUEST
-                        ApiErrorType.Unauthorized -> DataError.Network.UNAUTHORIZED
-                        ApiErrorType.Forbidden -> DataError.Network.FORBIDDEN
-                        ApiErrorType.NotFound -> DataError.Network.NOT_FOUND
-                        ApiErrorType.RequestTimeout -> DataError.Network.REQUEST_TIME_OUT
-                        ApiErrorType.Gone -> DataError.Network.GONE
-                        ApiErrorType.InternalServerError -> DataError.Network.INTERNAL_SERVER_ERROR
-                        ApiErrorType.BadGateway -> DataError.Network.BAD_GATEWAY
-                        ApiErrorType.ServiceUnavailable -> DataError.Network.SERVICE_UNAVAILABLE
-                        else -> DataError.Network.UNKNOWN
-                    },
+                    error = mapApiErrorToDataError(exception.errorType),
                 ),
             )
         }
@@ -52,7 +34,7 @@ suspend fun handleError(
         }
 
         else -> {
-            Timber.w(message = "Unknown", t = exception)
+            Timber.w(message = "Unhandled Exception", t = exception)
             send(Result.Error(error = DataError.Network.UNKNOWN))
         }
     }
@@ -69,24 +51,8 @@ fun handleNetworkError(
                 } else {
                     "Unknown"
                 }
-            if (exception.errorType == ApiErrorType.Unauthorized) {
-                Timber.d(message = message, t = exception)
-            } else {
-                Timber.w(message = message, t = exception)
-            }
-            when (exception.errorType) {
-                ApiErrorType.NoContent -> DataError.Network.NO_CONTENT
-                ApiErrorType.BadRequest -> DataError.Network.BAD_REQUEST
-                ApiErrorType.Unauthorized -> DataError.Network.UNAUTHORIZED
-                ApiErrorType.Forbidden -> DataError.Network.FORBIDDEN
-                ApiErrorType.NotFound -> DataError.Network.NOT_FOUND
-                ApiErrorType.RequestTimeout -> DataError.Network.REQUEST_TIME_OUT
-                ApiErrorType.Gone -> DataError.Network.GONE
-                ApiErrorType.InternalServerError -> DataError.Network.INTERNAL_SERVER_ERROR
-                ApiErrorType.BadGateway -> DataError.Network.BAD_GATEWAY
-                ApiErrorType.ServiceUnavailable -> DataError.Network.SERVICE_UNAVAILABLE
-                else -> DataError.Network.UNKNOWN
-            }
+            logError(exception, message)
+            mapApiErrorToDataError(exception.errorType)
         }
 
         is SocketTimeoutException,
@@ -100,4 +66,26 @@ fun handleNetworkError(
             DataError.Network.UNKNOWN
         }
     }
+}
+
+private fun logError(exception: ApiException, message: String) {
+    if (exception.errorType == ApiErrorType.Unauthorized) {
+        Timber.d(message, exception)
+    } else {
+        Timber.w(message, exception)
+    }
+}
+
+private fun mapApiErrorToDataError(errorType: ApiErrorType?): DataError.Network = when (errorType) {
+    ApiErrorType.NoContent -> DataError.Network.NO_CONTENT
+    ApiErrorType.BadRequest -> DataError.Network.BAD_REQUEST
+    ApiErrorType.Unauthorized -> DataError.Network.UNAUTHORIZED
+    ApiErrorType.Forbidden -> DataError.Network.FORBIDDEN
+    ApiErrorType.NotFound -> DataError.Network.NOT_FOUND
+    ApiErrorType.RequestTimeout -> DataError.Network.REQUEST_TIME_OUT
+    ApiErrorType.Gone -> DataError.Network.GONE
+    ApiErrorType.InternalServerError -> DataError.Network.INTERNAL_SERVER_ERROR
+    ApiErrorType.BadGateway -> DataError.Network.BAD_GATEWAY
+    ApiErrorType.ServiceUnavailable -> DataError.Network.SERVICE_UNAVAILABLE
+    else -> DataError.Network.UNKNOWN
 }

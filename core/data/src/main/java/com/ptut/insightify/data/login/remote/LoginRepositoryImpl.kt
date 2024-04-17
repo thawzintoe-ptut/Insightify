@@ -14,33 +14,33 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class LoginRepositoryImpl
-    @Inject
-    constructor(
-        private val loginApiService: LoginApiService,
-    ) : LoginRepository {
-        override fun fetchSurveyToken(
-            email: String,
-            password: String,
-        ): Flow<Result<AuthToken, DataError.Network>> =
-            flow<Result<AuthToken, DataError.Network>> {
-                val result =
-                    loginApiService.fetchSurveyToken(
-                        LoginRequestDto(
-                            grantType = "password",
-                            email = email,
-                            password = password,
-                            clientId = "6GbE8dhoz519l2N_F99StqoOs6Tcmm1rXgda4q__rIw",
-                            clientSecret = "_ayfIm7BeUAhx2W1OUqi20fwO3uNxfo1QstyKlFCgHw",
-                        ),
-                    )
-                if (result.isSuccessful) {
-                    result.body()?.let {
-                        emit(Result.Success(it.mapToDomain()))
-                    }
-                } else {
+@Inject
+constructor(
+    private val loginApiService: LoginApiService,
+) : LoginRepository {
+    override fun fetchSurveyToken(
+        email: String,
+        password: String,
+    ): Flow<Result<AuthToken, DataError.Network>> =
+        flow<Result<AuthToken, DataError.Network>> {
+            val result =
+                loginApiService.fetchSurveyToken(
+                    LoginRequestDto(
+                        grantType = "password",
+                        email = email,
+                        password = password,
+                        clientId = "6GbE8dhoz519l2N_F99StqoOs6Tcmm1rXgda4q__rIw",
+                        clientSecret = "_ayfIm7BeUAhx2W1OUqi20fwO3uNxfo1QstyKlFCgHw",
+                    ),
+                )
+            if (result.isSuccessful) {
+                result.body()?.let {
+                    emit(Result.Success(it.mapToDomain()))
+                } ?: run {
                     emit(Result.Error(DataError.Network.UNKNOWN))
                 }
-            }.catch { exception ->
-                handleError(exception = exception, send = { error -> emit(error) })
             }
-    }
+        }.catch { exception ->
+            handleError(exception = exception, send = { error -> emit(error) })
+        }
+}

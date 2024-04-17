@@ -1,6 +1,8 @@
 package com.ptut.insightify.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -42,11 +47,12 @@ import com.ptut.insightify.auth.util.IdConstants.USER_EMAIL
 import com.ptut.insightify.auth.util.IdConstants.USER_PASSWORD
 import com.ptut.insightify.common.error.DataError
 import com.ptut.insightify.ui.Design
+import com.ptut.insightify.ui.R
 import com.ptut.insightify.ui.components.Button
+import com.ptut.insightify.ui.components.LoadingWheel
 import com.ptut.insightify.ui.components.PasswordField
 import com.ptut.insightify.ui.components.TextField
 import com.ptut.insightify.ui.inputvalidations.InputWrapper
-import com.ptut.insightify.ui.screens.ErrorScreen
 import com.ptut.insightify.ui.theme.Black
 import com.ptut.insightify.ui.theme.Black20
 import com.ptut.insightify.ui.util.ObserveAsEvents
@@ -58,6 +64,7 @@ fun LoginRoute(
     viewModel: LoginViewModel,
     onLoginCompleted: () -> Unit,
 ) {
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -83,15 +90,14 @@ fun LoginRoute(
         viewModel.onUiEvent(UiEvent.OnPasswordImeActionClick)
     }
 
-    val onRetryClicked = {
-        viewModel.onUiEvent(UiEvent.RetryClicked)
-    }
-
     LaunchedEffect(Lifecycle.State.STARTED) {
         when (uiState.requestFocus) {
             FocusedTextFieldKey.EMAIL -> emailFocusRequester.requestFocus()
             FocusedTextFieldKey.PASSWORD -> passwordFocusRequester.requestFocus()
-            FocusedTextFieldKey.NONE -> focusManager.clearFocus()
+            FocusedTextFieldKey.NONE -> {
+                focusManager.clearFocus()
+                keyboardController?.hide()
+            }
         }
     }
 
@@ -123,31 +129,55 @@ fun LoginRoute(
                 ),
         )
 
-        if (!uiState.hasError) {
-            LoginScreen(
-                modifier = Modifier.fillMaxSize(),
-                email = uiState.email,
-                password = uiState.password,
-                areInputsValid = uiState.areInputsValid,
-                emailFocusRequester = emailFocusRequester,
-                passwordFocusRequester = passwordFocusRequester,
-                onEmailChanged = viewModel::onEmailChanged,
-                onEmailImeAction = onEmailImeAction,
-                onPasswordChanged = viewModel::onPasswordChanged,
-                onPasswordImeAction = onPasswordImeAction,
-                onEmailFieldFocusChanged = onTextFieldFocusChanged,
-                onPasswordFieldFocusChanged = onTextFieldFocusChanged,
-                onLoginClicked = {
-                    keyboardController?.hide()
-                    viewModel.onUiEvent(UiEvent.OnLoginClicked)
-                },
+        if (uiState.isLoading) {
+            Design.Components.LoadingWheel(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                    .pointerInput(Unit) {},
             )
-        } else {
-            Design.Components.ErrorScreen(
-                modifier = Modifier.fillMaxSize(),
-                errorType = uiState.errorType ?: DataError.Network.UNKNOWN,
-                onActionButtonClick = onRetryClicked,
-            )
+        }
+
+        LoginScreen(
+            modifier = Modifier.fillMaxSize(),
+            email = uiState.email,
+            password = uiState.password,
+            areInputsValid = uiState.areInputsValid,
+            emailFocusRequester = emailFocusRequester,
+            passwordFocusRequester = passwordFocusRequester,
+            onEmailChanged = viewModel::handleEmailChanged,
+            onEmailImeAction = onEmailImeAction,
+            onPasswordChanged = viewModel::handlePasswordChanged,
+            onPasswordImeAction = onPasswordImeAction,
+            onEmailFieldFocusChanged = onTextFieldFocusChanged,
+            onPasswordFieldFocusChanged = onTextFieldFocusChanged,
+            onLoginClicked = {
+                keyboardController?.hide()
+                viewModel.onUiEvent(UiEvent.OnLoginClicked)
+            },
+        )
+
+        if (uiState.hasError) {
+            val resId = when (uiState.errorType) {
+                DataError.Network.NO_CONTENT -> R.string.error_no_content
+                DataError.Network.BAD_GATEWAY -> R.string.error_bad_gateway
+                DataError.Network.FORBIDDEN -> R.string.error_forbidden
+                DataError.Network.NOT_FOUND -> R.string.error_not_found
+                DataError.Network.REQUEST_TIME_OUT -> R.string.error_request_time_out
+                DataError.Network.SERVICE_UNAVAILABLE -> R.string.error_service_unavailable
+                DataError.Network.INTERNAL_SERVER_ERROR -> R.string.error_internal_server_error
+                DataError.Network.BAD_REQUEST -> R.string.error_bad_request
+                DataError.Network.UNKNOWN -> R.string.error_unknown
+                DataError.Network.NETWORK_UNAVAILABLE -> R.string.error_network_unavailable
+                DataError.Network.UNAUTHORIZED -> R.string.error_unauthorized
+                DataError.Network.GONE -> R.string.error_gone
+                null -> R.string.error_unknown
+            }
+            Toast.makeText(
+                context,
+                stringResource(resId),
+                Toast.LENGTH_LONG,
+            ).show()
         }
 
     }

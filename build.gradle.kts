@@ -1,3 +1,5 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.jetbrains.kotlin.android) apply false
@@ -12,19 +14,18 @@ plugins {
     alias(libs.plugins.kotlinx.serialization) apply false
 }
 
-// subprojects {
-// //    apply(plugin = "org.jlleitschuh.gradle.ktlint")
-//    apply(from = "${rootProject.projectDir}/ktlint.gradle.kts")
-//
-// //    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-// //        android.set(true)
-// //        ignoreFailures.set(true)
-// //        reporters {
-// //            reporter(ReporterType.CHECKSTYLE)
-// //        }
-// //        debug.set(true)
-// //    }
-// }
+subprojects {
+    apply(plugin = "org.jlleitschuh.gradle.ktlint")
+
+    configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
+        android.set(true)
+        ignoreFailures.set(true)
+        reporters {
+            reporter(ReporterType.CHECKSTYLE)
+        }
+        debug.set(true)
+    }
+}
 
 tasks.register("clean") {
     delete(rootProject.buildDir)
