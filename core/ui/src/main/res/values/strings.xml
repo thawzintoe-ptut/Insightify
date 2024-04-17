@@ -1,3 +1,49 @@
 <resources>
     <string name="app_name">Insightify</string>
+    <string name="invalid_email">Please enter a valid email address.</string>
+    <string name="password_too_short">Password should be at least 8 characters long.</string>
+    <string name="login_success">Login successful!</string>
+    <string name="validation_error">Validation error. Please check your input.</string>
+
+    // Login Screen
+    <string name="btn_login">Login</string>
+    <string name="text_input_email">Email</string>
+    <string name="text_input_password">Password</string>
+
+    <!-- No Content -->
+    <string name="error_no_content">No Content: Server returned an empty response.</string>
+
+    <!-- Bad Request -->
+    <string name="error_bad_request">Bad Request: Invalid or malformed request.</string>
+
+    <!-- Not Found -->
+    <string name="error_not_found">Not Found: Resource not found.</string>
+
+    <!-- Request Timeout -->
+    <string name="error_request_time_out">Request Timeout: Server took too long to respond.</string>
+
+    <!-- Gone -->
+    <string name="error_gone">Gone: Requested resource no longer available.</string>
+
+    <!-- Internal Server Error -->
+    <string name="error_internal_server_error">Internal Server Error: Unexpected server error.</string>
+
+    <!-- Bad Gateway -->
+    <string name="error_bad_gateway">Bad Gateway: Invalid response from upstream server.</string>
+
+    <!-- Service Unavailable -->
+    <string name="error_service_unavailable">Service Unavailable: Server currently unavailable.</string>
+
+    <!-- Forbidden -->
+    <string name="error_forbidden">Forbidden: Access to resource is forbidden.</string>
+
+    <!-- Unknown Error -->
+    <string name="error_unknown">Unknown Error: An unknown error occurred.</string>
+
+    <!-- Unauthorized -->
+    <string name="error_unauthorized">Unauthorized: Access to resource unauthorized.</string>
+
+    <!-- Network Unavailable -->
+    <string name="error_network_unavailable">Network Unavailable: Check your internet connection.</string>
+    <string name="btn_retry">Retry</string>
 </resources>

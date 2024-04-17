@@ -6,35 +6,39 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ptut.insightify.navigation.SetupNavGraph
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
-            val systemUiController = rememberSystemUiController()
-            SideEffect {
-                systemUiController.setStatusBarColor(
-                    color = Color.Transparent,
-                    darkIcons = false
+            BackHandler(onBack = ::finish)
+            val navController = rememberNavController()
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+            ) { innerPadding ->
+                SetupNavGraph(
+                    navController = navController,
+                    padding = innerPadding,
                 )
             }
-            BackHandler {
-                this.finish()
-            }
-            val navController = rememberNavController()
-            SetupNavGraph(navController = navController)
+            WindowCompat.setDecorFitsSystemWindows(window, false)
         }
     }
 }
@@ -42,7 +46,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun BackHandler(
     enabled: Boolean = true,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val currentOnBack by rememberUpdatedState(onBack)
     val backCallback =

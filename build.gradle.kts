@@ -10,35 +10,19 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ktlint) apply false
     alias(libs.plugins.ktlint.idea) apply false
+    alias(libs.plugins.kotlin.parcelize) apply false
+    alias(libs.plugins.kotlinx.serialization) apply false
+    alias(libs.plugins.kover) apply false
 }
 
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "org.jlleitschuh.gradle.ktlint-idea")
 
     configure<org.jlleitschuh.gradle.ktlint.KtlintExtension> {
-        verbose.set(true)
         android.set(true)
-        outputToConsole.set(true)
-        outputColorName.set("RED")
         ignoreFailures.set(true)
-        enableExperimentalRules.set(true)
-        disabledRules.set(
-            setOf(
-                "final-newline",
-                "no_wildcard_imports",
-                "import-ordering"
-            )
-        )
         reporters {
             reporter(ReporterType.CHECKSTYLE)
-        }
-        kotlinScriptAdditionalPaths {
-            include(fileTree("scripts/"))
-        }
-        filter {
-            exclude("**/generated/**")
-            include("**/kotlin/**")
         }
         debug.set(true)
     }

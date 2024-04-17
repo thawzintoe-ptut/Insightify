@@ -1,13 +1,17 @@
 package com.ptut.insightify.auth.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.ptut.insightify.auth.LoginRoute
 
 const val LOGIN = "login"
 
-fun NavGraphBuilder.login(onLoginClick: () -> Unit) {
+fun NavGraphBuilder.login(onLoginCompleted: () -> Unit) {
     composable(route = LOGIN) {
-        LoginRoute(onLoginClick = onLoginClick)
+        LoginRoute(
+            viewModel = hiltViewModel(),
+            onLoginCompleted = onLoginCompleted
+        )
     }
 }

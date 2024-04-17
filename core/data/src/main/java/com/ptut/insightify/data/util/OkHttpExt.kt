@@ -1,6 +1,8 @@
 package com.ptut.insightify.data.util
 
-import com.ptut.insightify.BuildConfig
+import com.ptut.insightify.common.BuildConfig
+import com.ptut.insightify.common.util.ApiErrorType
+import com.ptut.insightify.common.util.ApiException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -30,7 +32,7 @@ fun OkHttpClient.Builder.setPlatform(platform: String) =
 
 fun OkHttpClient.Builder.setAuthorizationToken(
     token: () -> String,
-    refreshToken: () -> String
+    refreshToken: () -> String,
 ): OkHttpClient.Builder {
     addInterceptor { chain ->
         val request =
@@ -56,7 +58,7 @@ fun OkHttpClient.Builder.setAuthorizationToken(
         } else if (response.request.isAuthRequired() && response.priorResponse != null) {
             throw ApiException(
                 errorType = ApiErrorType.Unauthorized,
-                message = "Unauthorized"
+                message = "Unauthorized",
             )
         } else {
             null
@@ -73,7 +75,7 @@ fun OkHttpClient.Builder.handleErrors() =
             response.isSuccessful -> handleSuccessfulResponse(response)
             else -> throw ApiException(
                 errorType = ApiErrorType.fromCode(response.code),
-                message = response.message
+                message = response.message,
             )
         }
     }
