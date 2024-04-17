@@ -7,8 +7,8 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface LoginApiService {
-    @POST("/api/v1/oauth/token")
+    @POST("/oauth/token")
     suspend fun fetchSurveyToken(
-        @Body loginRequestDto: LoginRequestDto
+        @Body loginRequestDto: LoginRequestDto,
     ): Response<LoginResponseDto>
 }

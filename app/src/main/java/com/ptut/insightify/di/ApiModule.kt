@@ -1,4 +1,4 @@
-package com.ptut.insightify.data.di
+package com.ptut.insightify.di
 
 import android.content.Context
 import android.os.Build
@@ -15,7 +15,7 @@ import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import com.ptut.insightify.common.BuildConfig
+import com.ptut.insightify.BuildConfig
 import com.ptut.insightify.data.login.local.user.UserTokenSharedPreferencesProvider
 import com.ptut.insightify.data.login.service.LoginApiService
 import com.ptut.insightify.data.profile.service.ProfileApiService

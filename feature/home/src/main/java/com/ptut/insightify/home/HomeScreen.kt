@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +51,7 @@ import com.ptut.insightify.ui.theme.Black
 import com.ptut.insightify.ui.theme.Black01
 import com.ptut.insightify.ui.theme.neuzeitFontFamily
 import com.ptut.insightify.ui.util.gradientBackground
+import com.ptut.insightify.ui.R as uiR
 
 @Composable
 fun HomeRoute(
@@ -87,7 +89,10 @@ fun HomeRoute(
             )
         }
 
-        if (surveys.loadState.refresh is LoadState.Error) {
+        if (
+            surveys.loadState.refresh is LoadState.Error
+            || surveys.loadState.append is LoadState.Error
+        ) {
             uiState.errorType?.let {
                 Design.Components.ErrorScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -330,5 +335,6 @@ fun HomeScreenBackground(imageUrl: String) {
         model = imageUrl,
         contentDescription = "home background",
         contentScale = ContentScale.Crop,
+        error = painterResource(uiR.drawable.ic_survey_background_1),
     )
 }

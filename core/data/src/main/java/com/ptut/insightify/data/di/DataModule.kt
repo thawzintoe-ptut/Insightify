@@ -1,4 +1,4 @@
-package com.ptut.insightify.di
+package com.ptut.insightify.data.di
 
 import androidx.paging.Pager
 import com.ptut.insightify.data.login.remote.LoginRepositoryImpl
