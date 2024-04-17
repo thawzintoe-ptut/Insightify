@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
@@ -60,28 +61,33 @@ fun HomeRoute(
     val surveys = uiState.surveys.collectAsLazyPagingItems()
 
     Box(Modifier.fillMaxSize()) {
-        if (surveys.itemCount == 0) {
-            Design.Components.ShimmerLoadingIndicator(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color.Black),
-            )
-        } else {
+        Design.Components.ShimmerLoadingIndicator(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black),
+        )
+
+        if (
+            surveys.itemCount != 0
+            && surveys.loadState.refresh is LoadState.NotLoading
+            && surveys.loadState.append is LoadState.NotLoading
+        ) {
             HomeScreenPager(
-                isRefreshing = uiState.isLoading,
+                name = uiState.name,
                 innerPaddingValues = innerPaddingValues,
                 profileUrl = uiState.profileImageUrl,
                 currentDate = uiState.currentDate,
                 onDetailContinueClicked = onDetailContinueClicked,
                 surveyItems = surveys,
-                onRefresh = {
+                onScroll = {
                     viewModel.onUiEvent(
-                        UiEvent.RefreshSurveyList,
+                        UiEvent.Scroll,
                     )
                 },
             )
         }
-        if (uiState.hasError) {
+
+        if (surveys.loadState.refresh is LoadState.Error) {
             uiState.errorType?.let {
                 Design.Components.ErrorScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -100,13 +106,13 @@ fun HomeRoute(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenPager(
-    isRefreshing: Boolean,
+    name: String,
     profileUrl: String,
     currentDate: String,
     surveyItems: LazyPagingItems<Survey>,
     innerPaddingValues: PaddingValues = PaddingValues(20.dp),
     onDetailContinueClicked: (String) -> Unit = {},
-    onRefresh: () -> Unit,
+    onScroll: () -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { surveyItems.itemCount })
     val indicatorScrollState = rememberLazyListState()
@@ -152,6 +158,7 @@ fun HomeScreenPager(
                 .padding(innerPaddingValues)
                 .padding(20.dp)
                 .align(Alignment.TopStart),
+            name = name,
             profileUrl = profileUrl,
             currentDate = currentDate,
         )
@@ -180,14 +187,14 @@ fun HomeScreenPager(
 @Composable
 fun TopProfileContent(
     modifier: Modifier,
+    name: String,
     profileUrl: String,
     currentDate: String,
 ) {
     Column(modifier = modifier) {
         Text(
             text = currentDate,
-            style =
-            MaterialTheme.typography.titleSmall.copy(
+            style = MaterialTheme.typography.titleSmall.copy(
                 fontSize = 13.sp,
                 fontWeight = FontWeight.ExtraBold,
                 color = Color.White,
@@ -197,7 +204,7 @@ fun TopProfileContent(
         Spacer(modifier = Modifier.height(4.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "Good Morning",
+                text = name,
                 style =
                 MaterialTheme.typography.titleLarge.copy(
                     fontSize = 30.sp,

@@ -33,8 +33,8 @@ class LoginViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val loginUserUseCase: LoginUserUseCase,
 ) : ViewModel() {
-    private val userEmail = savedStateHandle.get<InputWrapper>(USER_EMAIL) ?: InputWrapper()
-    private val userPassword = savedStateHandle.get<InputWrapper>(USER_PASSWORD) ?: InputWrapper()
+    private var userEmail = savedStateHandle.get<InputWrapper>(USER_EMAIL) ?: InputWrapper()
+    private var userPassword = savedStateHandle.get<InputWrapper>(USER_PASSWORD) ?: InputWrapper()
     private var focusedTextField = savedStateHandle[FOCUSED_TEXT_FIELD] ?: FocusedTextFieldKey.EMAIL
         set(value) {
             field = value
@@ -63,7 +63,7 @@ class LoginViewModel @Inject constructor(
 
             is UiEvent.OnPasswordImeActionClick -> handleImeAction(
                 FocusedTextFieldKey.NONE,
-                FocusDirection.Exit,
+                FocusDirection.Down,
             )
 
             is UiEvent.OnTextFieldFocusChanged -> onTextFieldFocusChanged(
@@ -99,19 +99,21 @@ class LoginViewModel @Inject constructor(
 
     fun handleEmailChanged(input: String) {
         val errorId = InputValidator.getEmailErrorIdOrNull(input)
-        savedStateHandle[USER_EMAIL] = userEmail.copy(
+        userEmail = userEmail.copy(
             value = input,
             errorId = errorId,
         )
+        savedStateHandle[USER_EMAIL] = userEmail
         updateUiState()
     }
 
     fun handlePasswordChanged(input: String) {
         val errorId = InputValidator.getPasswordErrorIdOrNull(input)
-        savedStateHandle[USER_PASSWORD] = userPassword.copy(
+        userPassword = userPassword.copy(
             value = input,
             errorId = errorId,
         )
+        savedStateHandle[USER_PASSWORD] = userPassword
         updateUiState()
     }
 
@@ -136,8 +138,7 @@ class LoginViewModel @Inject constructor(
         focusedTextField = if (isFocused) key else FocusedTextFieldKey.NONE
         _uiState.update {
             it.copy(
-                isMoveFocused = true,
-                requestFocus = key,
+                requestFocus = focusedTextField,
             )
         }
     }

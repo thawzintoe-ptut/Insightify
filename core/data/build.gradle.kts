@@ -94,4 +94,10 @@ dependencies {
 
     // paging
     implementation(libs.androidx.paging)
+    
+    // room
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
 }

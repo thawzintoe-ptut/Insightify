@@ -3,6 +3,7 @@ package com.ptut.insightify.domain.di
 import com.ptut.insightify.domain.login.repository.LoginRepository
 import com.ptut.insightify.domain.login.usecase.LoginUserUseCase
 import com.ptut.insightify.domain.profile.repository.ProfileRepository
+import com.ptut.insightify.domain.profile.usecase.GetProfileUseCase
 import com.ptut.insightify.domain.survey.repository.SurveyRepository
 import com.ptut.insightify.domain.survey.usecase.GetSurveysUseCase
 import com.ptut.insightify.domain.survey.usecase.RefreshSurveysUseCase
@@ -49,6 +50,17 @@ object DomainModule {
     ): GetSurveysUseCase {
         return GetSurveysUseCase(
             surveysRepository = surveyRepository,
+            profileRepository = profileRepository,
+        )
+    }
+
+    @Provides
+    @ViewModelScoped
+    @IntoSet
+    fun provideGetProfileUseCase(
+        profileRepository: ProfileRepository,
+    ): GetProfileUseCase {
+        return GetProfileUseCase(
             profileRepository = profileRepository,
         )
     }

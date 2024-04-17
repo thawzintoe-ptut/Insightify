@@ -5,6 +5,10 @@ import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.annotation.RequiresApi
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.room.Room
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.chuckerteam.chucker.api.ChuckerCollector
@@ -15,6 +19,10 @@ import com.ptut.insightify.common.BuildConfig
 import com.ptut.insightify.data.login.local.user.UserTokenSharedPreferencesProvider
 import com.ptut.insightify.data.login.service.LoginApiService
 import com.ptut.insightify.data.profile.service.ProfileApiService
+import com.ptut.insightify.data.survey.local.InsightifyDatabase
+import com.ptut.insightify.data.survey.local.SurveyEntity
+import com.ptut.insightify.data.survey.remote.SurveyListRemoteMediator
+import com.ptut.insightify.data.survey.remote.SurveyRepositoryImpl.Companion.NETWORK_PAGE_SIZE
 import com.ptut.insightify.data.survey.service.SurveyApiService
 import com.ptut.insightify.data.util.API_TIMEOUT
 import com.ptut.insightify.data.util.handleErrors
@@ -137,6 +145,16 @@ object ApiModule {
 
     @Provides
     @Singleton
+    fun provideInsightifyDatabase(@ApplicationContext context: Context): InsightifyDatabase {
+        return Room.databaseBuilder(
+            context,
+            InsightifyDatabase::class.java,
+            "insightify.db",
+        ).build()
+    }
+
+    @Provides
+    @Singleton
     fun provideLoginApiService(retrofit: Retrofit): LoginApiService {
         return retrofit.create(LoginApiService::class.java)
     }
@@ -145,6 +163,28 @@ object ApiModule {
     @Singleton
     fun provideSurveyApiService(retrofit: Retrofit): SurveyApiService {
         return retrofit.create(SurveyApiService::class.java)
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    @Provides
+    @Singleton
+    fun provideSurveysPager(
+        database: InsightifyDatabase,
+        surveyApiService: SurveyApiService,
+    ): Pager<Int, SurveyEntity> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false,
+            ),
+            remoteMediator = SurveyListRemoteMediator(
+                database = database,
+                apiService = surveyApiService,
+            ),
+            pagingSourceFactory = {
+                database.surveyDao().pagingSource()
+            },
+        )
     }
 
     @Provides

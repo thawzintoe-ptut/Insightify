@@ -1,4 +1,4 @@
-package com.ptut.insightify.data.login.remote
+package com.ptut.insightify.data
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

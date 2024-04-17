@@ -8,7 +8,9 @@ import com.ptut.insightify.common.error.DataError
 import com.ptut.insightify.common.error.Result
 import com.ptut.insightify.common.util.ApiErrorType
 import com.ptut.insightify.common.util.ApiException
+import com.ptut.insightify.data.MainCoroutineRule
 import com.ptut.insightify.data.login.service.LoginApiService
+import com.ptut.insightify.data.loginResponseDto
 import com.ptut.insightify.domain.login.repository.LoginRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals

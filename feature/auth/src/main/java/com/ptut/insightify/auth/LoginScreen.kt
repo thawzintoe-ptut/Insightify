@@ -95,8 +95,8 @@ fun LoginRoute(
             FocusedTextFieldKey.EMAIL -> emailFocusRequester.requestFocus()
             FocusedTextFieldKey.PASSWORD -> passwordFocusRequester.requestFocus()
             FocusedTextFieldKey.NONE -> {
-                focusManager.clearFocus()
                 keyboardController?.hide()
+                focusManager.clearFocus()
             }
         }
     }

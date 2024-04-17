@@ -1,11 +1,12 @@
 package com.ptut.insightify.di
 
+import androidx.paging.Pager
 import com.ptut.insightify.data.login.remote.LoginRepositoryImpl
 import com.ptut.insightify.data.login.service.LoginApiService
 import com.ptut.insightify.data.profile.remote.ProfileRepositoryImpl
 import com.ptut.insightify.data.profile.service.ProfileApiService
+import com.ptut.insightify.data.survey.local.SurveyEntity
 import com.ptut.insightify.data.survey.remote.SurveyRepositoryImpl
-import com.ptut.insightify.data.survey.service.SurveyApiService
 import com.ptut.insightify.domain.login.repository.LoginRepository
 import com.ptut.insightify.domain.profile.repository.ProfileRepository
 import com.ptut.insightify.domain.survey.repository.SurveyRepository
@@ -26,8 +27,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideSurveyRepository(surveyApiService: SurveyApiService): SurveyRepository {
-        return SurveyRepositoryImpl(surveyApiService)
+    fun provideSurveyRepository(surveyPager: Pager<Int, SurveyEntity>): SurveyRepository {
+        return SurveyRepositoryImpl(surveyPager)
     }
 
     @Provides

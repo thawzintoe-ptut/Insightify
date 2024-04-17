@@ -90,6 +90,7 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockk)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
