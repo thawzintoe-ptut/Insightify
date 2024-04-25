@@ -115,4 +115,6 @@ dependencies {
     implementation(libs.lifecycle.compiler)
     implementation(libs.lifecycle.runtime.compose) // kotlinx serialization
     implementation(libs.kotlinx.serialization)
+    // coil
+    implementation(libs.coil)
 }
