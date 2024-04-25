@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
@@ -38,6 +41,8 @@ import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
+import com.google.android.material.textfield.TextInputLayout.BoxBackgroundMode
 import com.ptut.insightify.auth.LoginViewModel.UiEvent
 import com.ptut.insightify.auth.util.FocusedTextFieldKey
 import com.ptut.insightify.auth.util.IdConstants.LOGIN_BTN
@@ -53,10 +58,7 @@ import com.ptut.insightify.ui.components.LoadingWheel
 import com.ptut.insightify.ui.components.PasswordField
 import com.ptut.insightify.ui.components.TextField
 import com.ptut.insightify.ui.inputvalidations.InputWrapper
-import com.ptut.insightify.ui.theme.Black
-import com.ptut.insightify.ui.theme.Black20
 import com.ptut.insightify.ui.util.ObserveAsEvents
-import com.ptut.insightify.ui.util.gradientBackground
 import com.ptut.insightify.ui.R as uiR
 
 @Composable
@@ -115,20 +117,9 @@ fun LoginRoute(
         onTextFieldFocusChanged(FocusedTextFieldKey.NONE, false)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        LoginScreenBackground(
-            modifier = Modifier.fillMaxSize(),
-        )
 
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .gradientBackground(
-                    topColor = Black20,
-                    bottomColor = Black,
-                ),
-        )
-
+    Box {
+        LoginScreenBackground(modifier = Modifier.fillMaxSize())
         if (uiState.isLoading) {
             Design.Components.LoadingWheel(
                 modifier = Modifier
@@ -179,7 +170,6 @@ fun LoginRoute(
                 Toast.LENGTH_LONG,
             ).show()
         }
-
     }
 }
 
@@ -302,8 +292,9 @@ fun setLoginConstraints(): ConstraintSet {
 @Composable
 fun LoginScreenBackground(modifier: Modifier = Modifier) {
     Image(
-        modifier = modifier,
+        modifier = Modifier.fillMaxSize(),
         painter = painterResource(id = uiR.drawable.ic_background),
         contentDescription = "login background",
+        contentScale = ContentScale.FillBounds
     )
 }

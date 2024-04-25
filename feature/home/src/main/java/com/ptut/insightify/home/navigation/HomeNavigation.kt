@@ -9,13 +9,11 @@ import com.ptut.insightify.home.HomeRoute
 const val HOME = "home"
 
 fun NavGraphBuilder.home(
-    innerPaddingValues: PaddingValues,
     onDetailContinueClicked: (String) -> Unit,
 ) {
     composable(route = HOME) {
         HomeRoute(
             viewModel = hiltViewModel(),
-            innerPaddingValues = innerPaddingValues,
             onDetailContinueClicked = onDetailContinueClicked,
         )
     }
