@@ -174,7 +174,7 @@ fun LoginRoute(
 }
 
 @Composable
-fun LoginScreen(
+private fun LoginScreen(
     modifier: Modifier = Modifier,
     email: InputWrapper,
     password: InputWrapper,
@@ -267,7 +267,7 @@ fun LoginScreen(
 }
 
 @Composable
-fun setLoginConstraints(): ConstraintSet {
+private fun setLoginConstraints(): ConstraintSet {
     return ConstraintSet {
         val loginImageConstraint = createRefFor(LOGIN_ICON)
         val loginContentConstraint = createRefFor(LOGIN_CONTENT)
@@ -290,9 +290,9 @@ fun setLoginConstraints(): ConstraintSet {
 }
 
 @Composable
-fun LoginScreenBackground(modifier: Modifier = Modifier) {
+private fun LoginScreenBackground(modifier: Modifier = Modifier) {
     Image(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         painter = painterResource(id = uiR.drawable.ic_background),
         contentDescription = "login background",
         contentScale = ContentScale.FillBounds

@@ -102,7 +102,7 @@ fun HomeRoute(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun HomeScreenPager(
+private fun HomeScreenPager(
     name: String,
     profileUrl: String,
     currentDate: String,
@@ -179,7 +179,7 @@ fun HomeScreenPager(
 }
 
 @Composable
-fun TopProfileContent(
+private fun TopProfileContent(
     modifier: Modifier,
     name: String,
     profileUrl: String,
@@ -221,7 +221,7 @@ fun TopProfileContent(
 }
 
 @Composable
-fun BottomDescriptionContent(
+private fun BottomDescriptionContent(
     descTitle: String,
     description: String,
     onDetailContinueClicked: (String) -> Unit,
@@ -288,7 +288,7 @@ fun BottomDescriptionContent(
 }
 
 @Composable
-fun IndicatorRow(
+private fun IndicatorRow(
     modifier: Modifier = Modifier,
     currentPage: Int,
     indicatorCount: Int,
@@ -315,7 +315,7 @@ fun IndicatorRow(
 }
 
 @Composable
-fun HomeScreenBackground(imageUrl: String) {
+private fun HomeScreenBackground(imageUrl: String) {
     AsyncImage(
         modifier = Modifier
             .fillMaxSize()
