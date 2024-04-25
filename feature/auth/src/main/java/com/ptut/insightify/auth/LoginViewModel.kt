@@ -51,7 +51,6 @@ class LoginViewModel @Inject constructor(
         if (focusedTextField != FocusedTextFieldKey.NONE) focusOnLastSelectedTextField()
     }
 
-    @OptIn(ExperimentalComposeUiApi::class)
     fun onUiEvent(event: UiEvent) {
         when (event) {
             is UiEvent.OnEmailChanged -> handleEmailChanged(event.input)
@@ -126,7 +125,7 @@ class LoginViewModel @Inject constructor(
                         isPasswordValid(userPassword),
                 hasError = false,
                 isKeyboardVisible = true,
-                errorType = null,
+                errorType = null
             )
         }
     }
@@ -139,6 +138,11 @@ class LoginViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 requestFocus = focusedTextField,
+                moveFocus = when {
+                    key == FocusedTextFieldKey.EMAIL && isFocused -> FocusDirection.Down
+                    key == FocusedTextFieldKey.PASSWORD && isFocused -> FocusDirection.Up
+                    else -> FocusDirection.Up
+                },
             )
         }
     }

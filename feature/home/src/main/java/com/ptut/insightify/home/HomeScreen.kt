@@ -4,7 +4,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -56,7 +55,6 @@ import com.ptut.insightify.ui.R as uiR
 @Composable
 fun HomeRoute(
     viewModel: HomeViewModel,
-    innerPaddingValues: PaddingValues,
     onDetailContinueClicked: (String) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -76,16 +74,10 @@ fun HomeRoute(
         ) {
             HomeScreenPager(
                 name = uiState.name,
-                innerPaddingValues = innerPaddingValues,
                 profileUrl = uiState.profileImageUrl,
                 currentDate = uiState.currentDate,
                 onDetailContinueClicked = onDetailContinueClicked,
-                surveyItems = surveys,
-                onScroll = {
-                    viewModel.onUiEvent(
-                        UiEvent.Scroll,
-                    )
-                },
+                surveyItems = surveys
             )
         }
 
@@ -115,9 +107,7 @@ fun HomeScreenPager(
     profileUrl: String,
     currentDate: String,
     surveyItems: LazyPagingItems<Survey>,
-    innerPaddingValues: PaddingValues = PaddingValues(20.dp),
-    onDetailContinueClicked: (String) -> Unit = {},
-    onScroll: () -> Unit,
+    onDetailContinueClicked: (String) -> Unit = {}
 ) {
     val pagerState = rememberPagerState(pageCount = { surveyItems.itemCount })
     val indicatorScrollState = rememberLazyListState()
@@ -160,7 +150,7 @@ fun HomeScreenPager(
 
         TopProfileContent(
             modifier = Modifier
-                .padding(innerPaddingValues)
+                .padding(top = 40.dp)
                 .padding(20.dp)
                 .align(Alignment.TopStart),
             name = name,
@@ -170,7 +160,6 @@ fun HomeScreenPager(
 
         Column(
             Modifier
-                .padding(innerPaddingValues)
                 .align(Alignment.BottomCenter),
         ) {
             IndicatorRow(
@@ -244,6 +233,7 @@ fun BottomDescriptionContent(
             fontSize = 32.sp,
             fontWeight = FontWeight.ExtraBold,
             color = Color.White,
+            fontFamily = neuzeitFontFamily,
         ),
         lineHeight = 40.sp,
         modifier = Modifier.padding(horizontal = 20.dp),
@@ -258,6 +248,7 @@ fun BottomDescriptionContent(
                 fontSize = 17.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.White,
+                fontFamily = neuzeitFontFamily,
             ),
             modifier =
             Modifier.constrainAs(title) {
