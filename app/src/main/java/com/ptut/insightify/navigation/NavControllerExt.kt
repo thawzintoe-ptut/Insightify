@@ -2,11 +2,9 @@
 
 package com.ptut.insightify.navigation
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -19,10 +17,9 @@ import com.ptut.insightify.splash.navigation.splash
 
 @Composable
 fun SetupNavGraph(
+    viewModel: MainViewModel = hiltViewModel(),
     navController: NavHostController,
-    padding: PaddingValues = PaddingValues(0.dp),
 ) {
-    val viewModel = hiltViewModel<MainViewModel>()
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     NavHost(
