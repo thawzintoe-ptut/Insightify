@@ -77,12 +77,7 @@ fun HomeRoute(
                 profileUrl = uiState.profileImageUrl,
                 currentDate = uiState.currentDate,
                 onDetailContinueClicked = onDetailContinueClicked,
-                surveyItems = surveys,
-                onScroll = {
-                    viewModel.onUiEvent(
-                        UiEvent.Scroll,
-                    )
-                },
+                surveyItems = surveys
             )
         }
 
@@ -112,8 +107,7 @@ fun HomeScreenPager(
     profileUrl: String,
     currentDate: String,
     surveyItems: LazyPagingItems<Survey>,
-    onDetailContinueClicked: (String) -> Unit = {},
-    onScroll: () -> Unit,
+    onDetailContinueClicked: (String) -> Unit = {}
 ) {
     val pagerState = rememberPagerState(pageCount = { surveyItems.itemCount })
     val indicatorScrollState = rememberLazyListState()
