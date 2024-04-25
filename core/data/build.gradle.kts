@@ -14,6 +14,9 @@ android {
         minSdk = libs.versions.minSdk.get().toInt()
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+        buildConfigField("String", "GRANT_TYPE", "\"password\"")
+        buildConfigField("String", "CLIENT_ID", "\"6GbE8dhoz519l2N_F99StqoOs6Tcmm1rXgda4q__rIw\"")
+        buildConfigField("String", "CLIENT_SECRET", "\"_ayfIm7BeUAhx2W1OUqi20fwO3uNxfo1QstyKlFCgHw\"")
     }
 
     buildTypes {
@@ -25,6 +28,7 @@ android {
             )
         }
     }
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

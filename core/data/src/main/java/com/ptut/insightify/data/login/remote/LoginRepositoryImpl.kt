@@ -3,6 +3,7 @@ package com.ptut.insightify.data.login.remote
 import com.ptut.insightify.common.error.DataError
 import com.ptut.insightify.common.error.Result
 import com.ptut.insightify.common.util.handleError
+import com.ptut.insightify.data.BuildConfig
 import com.ptut.insightify.data.login.mapper.mapToDomain
 import com.ptut.insightify.data.login.model.request.LoginRequestDto
 import com.ptut.insightify.data.login.service.LoginApiService
@@ -24,11 +25,11 @@ class LoginRepositoryImpl @Inject constructor(
             val result =
                 loginApiService.fetchSurveyToken(
                     LoginRequestDto(
-                        grantType = "password",
+                        grantType = BuildConfig.GRANT_TYPE,
                         email = email,
                         password = password,
-                        clientId = "6GbE8dhoz519l2N_F99StqoOs6Tcmm1rXgda4q__rIw",
-                        clientSecret = "_ayfIm7BeUAhx2W1OUqi20fwO3uNxfo1QstyKlFCgHw",
+                        clientId = BuildConfig.CLIENT_ID,
+                        clientSecret = BuildConfig.CLIENT_SECRET,
                     ),
                 )
             if (result.isSuccessful) {
