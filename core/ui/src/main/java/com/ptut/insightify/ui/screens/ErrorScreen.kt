@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ptut.insightify.common.error.DataError
 import com.ptut.insightify.ui.Design
@@ -92,4 +93,16 @@ fun Design.Components.ErrorScreen(
             enabled = true,
         )
     }
+}
+
+@Preview(
+    showSystemUi = true,
+    showBackground = true
+)
+@Composable
+fun ErrorScreenPreview() {
+    Design.Components.ErrorScreen(
+        errorType = DataError.Network.NO_CONTENT,
+        onActionButtonClick = {}
+    )
 }

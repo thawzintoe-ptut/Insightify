@@ -72,7 +72,7 @@ object ApiModule {
         masterKey: MasterKey,
     ): UserTokenProvider {
         return UserTokenSharedPreferencesProvider(
-            EncryptedSharedPreferences.create(
+            sharedPreferences = EncryptedSharedPreferences.create(
                 context,
                 ENCRYPTED_PREFERENCES_NAME,
                 masterKey,

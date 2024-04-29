@@ -103,9 +103,9 @@ fun HomeRoute(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeScreenPager(
-    name: String,
-    profileUrl: String,
-    currentDate: String,
+    name: String = "John Doe",
+    profileUrl: String = "https://randomuser.me/api/portraits",
+    currentDate: String = "Today, 12:00 PM",
     surveyItems: LazyPagingItems<Survey>,
     onDetailContinueClicked: (String) -> Unit = {}
 ) {

@@ -35,6 +35,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Devices
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
@@ -130,7 +133,6 @@ fun LoginRoute(
         }
 
         LoginScreen(
-            modifier = Modifier.fillMaxSize(),
             email = uiState.email,
             password = uiState.password,
             areInputsValid = uiState.areInputsValid,
@@ -173,31 +175,35 @@ fun LoginRoute(
     }
 }
 
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFA000000
+)
 @Composable
-private fun LoginScreen(
-    modifier: Modifier = Modifier,
-    email: InputWrapper,
-    password: InputWrapper,
-    areInputsValid: Boolean,
-    emailFocusRequester: FocusRequester,
-    passwordFocusRequester: FocusRequester,
-    onEmailChanged: (String) -> Unit,
-    onEmailImeAction: () -> Unit,
+fun LoginScreen(
+    email: InputWrapper = InputWrapper(),
+    password: InputWrapper = InputWrapper(),
+    areInputsValid: Boolean = false,
+    emailFocusRequester: FocusRequester = FocusRequester(),
+    passwordFocusRequester: FocusRequester = FocusRequester(),
+    onEmailChanged: (String) -> Unit = {},
+    onEmailImeAction: () -> Unit = {},
     onEmailFieldFocusChanged: (
         focusTextFieldKey: FocusedTextFieldKey,
         isFocused: Boolean,
-    ) -> Unit,
+    ) -> Unit = { _, _ -> },
     onPasswordFieldFocusChanged: (
         focusTextFieldKey: FocusedTextFieldKey,
         isFocused: Boolean,
-    ) -> Unit,
-    onPasswordChanged: (String) -> Unit,
-    onPasswordImeAction: () -> Unit,
-    onLoginClicked: () -> Unit,
+    ) -> Unit= { _, _ -> },
+    onPasswordChanged: (String) -> Unit = {},
+    onPasswordImeAction: () -> Unit = {},
+    onLoginClicked: () -> Unit = {},
 ) {
     ConstraintLayout(
         constraintSet = setLoginConstraints(),
-        modifier = modifier.padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
     ) {
         Image(
             modifier = Modifier
@@ -267,7 +273,7 @@ private fun LoginScreen(
 }
 
 @Composable
-private fun setLoginConstraints(): ConstraintSet {
+fun setLoginConstraints(): ConstraintSet {
     return ConstraintSet {
         val loginImageConstraint = createRefFor(LOGIN_ICON)
         val loginContentConstraint = createRefFor(LOGIN_CONTENT)
@@ -290,7 +296,7 @@ private fun setLoginConstraints(): ConstraintSet {
 }
 
 @Composable
-private fun LoginScreenBackground(modifier: Modifier = Modifier) {
+fun LoginScreenBackground(modifier: Modifier = Modifier) {
     Image(
         modifier = modifier,
         painter = painterResource(id = uiR.drawable.ic_background),

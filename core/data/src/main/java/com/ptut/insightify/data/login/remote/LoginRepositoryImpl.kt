@@ -21,7 +21,7 @@ class LoginRepositoryImpl @Inject constructor(
         email: String,
         password: String,
     ): Flow<Result<AuthToken, DataError.Network>> =
-        flow<Result<AuthToken, DataError.Network>> {
+        flow {
             val result =
                 loginApiService.fetchSurveyToken(
                     LoginRequestDto(

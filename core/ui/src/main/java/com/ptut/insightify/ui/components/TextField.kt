@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ptut.insightify.ui.Design
@@ -35,7 +36,7 @@ import com.ptut.insightify.ui.theme.White18
 import com.ptut.insightify.ui.util.OnImeKeyAction
 import com.ptut.insightify.ui.util.OnValueChange
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Design.Components.TextField(
     modifier: Modifier = Modifier,
@@ -112,3 +113,19 @@ fun Design.Components.TextField(
         }
     }
 }
+
+
+@Preview
+@Composable
+fun TextFieldPreview() {
+    Design.Components.TextField(
+        inputWrapper = InputWrapper(
+            value = "thaw",
+            errorId = null
+        ),
+        labelResId = 0,
+        onValueChange = {},
+        onImeKeyAction = {}
+    )
+}
+
