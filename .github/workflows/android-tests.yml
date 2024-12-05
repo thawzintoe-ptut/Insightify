@@ -8,7 +8,7 @@ on:
     branches:
       - '**'  # Trigger for all pull requests
   schedule:
-    - cron: '0 2 * * *'  # Schedule for nightly runs at 2 AM UTC
+    - cron: '0 2 * * *'  # Nightly runs at 2 AM UTC for Release Candidate Tests
 
 jobs:
   unit_and_component_tests:
@@ -55,13 +55,29 @@ jobs:
         api-level: 33
         build-tools: 33.0.2
 
-    - name: Run Feature Tests on Emulator
+    - name: Install Emulator System Image
+      run: sdkmanager "system-images;android-33;google_apis;x86_64"
+
+    - name: Create Emulator
+      run: avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel_3a"
+
+    - name: Start Emulator
+      run: |
+        $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
+      env:
+        ANDROID_SDK_ROOT: /usr/local/android-sdk
+
+    - name: Wait for Emulator
+      run: |
+        adb wait-for-device
+        adb shell input keyevent 82  # Unlock screen
+
+    - name: Run Feature Tests
       run: ./gradlew connectedAndroidTest
 
   application_tests:
     name: Application Tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -78,13 +94,29 @@ jobs:
         api-level: 33
         build-tools: 33.0.2
 
-    - name: Run Application Tests on Emulator
+    - name: Install Emulator System Image
+      run: sdkmanager "system-images;android-33;google_apis;x86_64"
+
+    - name: Create Emulator
+      run: avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel_3a"
+
+    - name: Start Emulator
+      run: |
+        $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
+      env:
+        ANDROID_SDK_ROOT: /usr/local/android-sdk
+
+    - name: Wait for Emulator
+      run: |
+        adb wait-for-device
+        adb shell input keyevent 82  # Unlock screen
+
+    - name: Run Application Tests
       run: ./gradlew connectedAndroidTest
 
   release_candidate_tests:
     name: Release Candidate Tests
     runs-on: ubuntu-latest
-    if: github.event_name == 'schedule'  # Only runs for scheduled events
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -100,6 +132,23 @@ jobs:
       with:
         api-level: 33
         build-tools: 33.0.2
+
+    - name: Install Emulator System Image
+      run: sdkmanager "system-images;android-33;google_apis;x86_64"
+
+    - name: Create Emulator
+      run: avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel_3a"
+
+    - name: Start Emulator
+      run: |
+        $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
+      env:
+        ANDROID_SDK_ROOT: /usr/local/android-sdk
+
+    - name: Wait for Emulator
+      run: |
+        adb wait-for-device
+        adb shell input keyevent 82  # Unlock screen
 
     - name: Run Release Candidate Tests
       run: ./gradlew connectedAndroidTest
