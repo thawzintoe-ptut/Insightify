@@ -15,20 +15,17 @@ jobs:
     name: Unit and Component Tests
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Checkout GIT
+      uses: actions/checkout@v4
 
-    - name: Setup JDK
-      uses: actions/setup-java@v3
+    - name: Setup Java SDK
+      uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
-        java-version: '17'
+        distribution: 'adopt'
+        java-version: '18'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
-      with:
-        api-level: 33
-        build-tools: 33.0.2
+    - name: Gradle cache
+      uses: gradle/actions/setup-gradle@v4
 
     - name: Run Unit Tests
       run: ./gradlew testDebugUnitTest
@@ -40,115 +37,151 @@ jobs:
     name: Feature Tests
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Checkout GIT
+      uses: actions/checkout@v4
 
-    - name: Setup JDK
-      uses: actions/setup-java@v3
+    - name: Setup Java SDK
+      uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
-        java-version: '17'
+        distribution: 'adopt'
+        java-version: '18'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
+    - name: Gradle cache
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Enable KVM (emulator optimization)
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: AVD cache
+      uses: actions/cache@v4
+      id: avd-cache
       with:
-        api-level: 33
-        build-tools: 33.0.2
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-feature-${{ matrix.api-level }}
 
-    - name: Install Emulator System Image
-      run: sdkmanager "system-images;android-33;google_apis;x86_64"
-
-    - name: Create Emulator
-      run: avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel_3a"
-
-    - name: Start Emulator
-      run: |
-        $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
-      env:
-        ANDROID_SDK_ROOT: /usr/local/android-sdk
-
-    - name: Wait for Emulator
-      run: |
-        adb wait-for-device
-        adb shell input keyevent 82  # Unlock screen
+    - name: Create AVD and Generate Snapshot
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2.32.0
+      with:
+        api-level: 34
+        target: google_apis
+        arch: x86_64
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        script: echo "Generated AVD snapshot for caching."
 
     - name: Run Feature Tests
-      run: ./gradlew connectedAndroidTest
+      uses: reactivecircus/android-emulator-runner@v2.32.0
+      with:
+        api-level: 34
+        target: google_apis
+        arch: x86_64
+        script: ./gradlew connectedAndroidTest
 
   application_tests:
     name: Application Tests
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Checkout GIT
+      uses: actions/checkout@v4
 
-    - name: Setup JDK
-      uses: actions/setup-java@v3
+    - name: Setup Java SDK
+      uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
-        java-version: '17'
+        distribution: 'adopt'
+        java-version: '18'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
+    - name: Gradle cache
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Enable KVM (emulator optimization)
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: AVD cache
+      uses: actions/cache@v4
+      id: avd-cache
       with:
-        api-level: 33
-        build-tools: 33.0.2
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-application-${{ matrix.api-level }}
 
-    - name: Install Emulator System Image
-      run: sdkmanager "system-images;android-33;google_apis;x86_64"
-
-    - name: Create Emulator
-      run: avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel_3a"
-
-    - name: Start Emulator
-      run: |
-        $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
-      env:
-        ANDROID_SDK_ROOT: /usr/local/android-sdk
-
-    - name: Wait for Emulator
-      run: |
-        adb wait-for-device
-        adb shell input keyevent 82  # Unlock screen
+    - name: Create AVD and Generate Snapshot
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2.32.0
+      with:
+        api-level: 34
+        target: google_apis
+        arch: x86_64
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        script: echo "Generated AVD snapshot for caching."
 
     - name: Run Application Tests
-      run: ./gradlew connectedAndroidTest
+      uses: reactivecircus/android-emulator-runner@v2.32.0
+      with:
+        api-level: 34
+        target: google_apis
+        arch: x86_64
+        script: ./gradlew connectedAndroidTest
 
   release_candidate_tests:
     name: Release Candidate Tests
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+    - name: Checkout GIT
+      uses: actions/checkout@v4
 
-    - name: Setup JDK
-      uses: actions/setup-java@v3
+    - name: Setup Java SDK
+      uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
-        java-version: '17'
+        distribution: 'adopt'
+        java-version: '18'
 
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v2
+    - name: Gradle cache
+      uses: gradle/actions/setup-gradle@v4
+
+    - name: Enable KVM (emulator optimization)
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: AVD cache
+      uses: actions/cache@v4
+      id: avd-cache
       with:
-        api-level: 33
-        build-tools: 33.0.2
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-release-candidate-${{ matrix.api-level }}
 
-    - name: Install Emulator System Image
-      run: sdkmanager "system-images;android-33;google_apis;x86_64"
-
-    - name: Create Emulator
-      run: avdmanager create avd -n test -k "system-images;android-33;google_apis;x86_64" --device "pixel_3a"
-
-    - name: Start Emulator
-      run: |
-        $ANDROID_SDK_ROOT/emulator/emulator -avd test -no-audio -no-window -gpu swiftshader_indirect &
-      env:
-        ANDROID_SDK_ROOT: /usr/local/android-sdk
-
-    - name: Wait for Emulator
-      run: |
-        adb wait-for-device
-        adb shell input keyevent 82  # Unlock screen
+    - name: Create AVD and Generate Snapshot
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2.32.0
+      with:
+        api-level: 34
+        target: google_apis
+        arch: x86_64
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        script: echo "Generated AVD snapshot for caching."
 
     - name: Run Release Candidate Tests
-      run: ./gradlew connectedAndroidTest
+      uses: reactivecircus/android-emulator-runner@v2.32.0
+      with:
+        api-level: 34
+        target: google_apis
+        arch: x86_64
+        script: ./gradlew connectedAndroidTest
