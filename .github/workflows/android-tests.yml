@@ -6,7 +6,9 @@ on:
       - '**'  # Trigger for all branches
   pull_request:
     branches:
-      - '**'
+      - '**'  # Trigger for all pull requests
+  schedule:
+    - cron: '0 2 * * *'  # Schedule for nightly runs at 2 AM UTC
 
 jobs:
   unit_and_component_tests:
@@ -82,8 +84,7 @@ jobs:
   release_candidate_tests:
     name: Release Candidate Tests
     runs-on: ubuntu-latest
-    schedule:
-      - cron: '0 2 * * *' # Runs nightly at 2 AM UTC
+    if: github.event_name == 'schedule'  # Only runs for scheduled events
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
