@@ -1,0 +1,104 @@
+name: Android Test Pipeline
+
+on:
+  push:
+    branches:
+      - '**'  # Trigger for all branches
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  unit_and_component_tests:
+    name: Unit and Component Tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 33
+        build-tools: 33.0.2
+
+    - name: Run Unit Tests
+      run: ./gradlew testDebugUnitTest
+
+    - name: Run Component Tests
+      run: ./gradlew connectedAndroidTest
+
+  feature_tests:
+    name: Feature Tests
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 33
+        build-tools: 33.0.2
+
+    - name: Run Feature Tests on Emulator
+      run: ./gradlew connectedAndroidTest
+
+  application_tests:
+    name: Application Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 33
+        build-tools: 33.0.2
+
+    - name: Run Application Tests on Emulator
+      run: ./gradlew connectedAndroidTest
+
+  release_candidate_tests:
+    name: Release Candidate Tests
+    runs-on: ubuntu-latest
+    schedule:
+      - cron: '0 2 * * *' # Runs nightly at 2 AM UTC
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 33
+        build-tools: 33.0.2
+
+    - name: Run Release Candidate Tests
+      run: ./gradlew connectedAndroidTest
