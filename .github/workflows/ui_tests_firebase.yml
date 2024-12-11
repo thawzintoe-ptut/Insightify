@@ -1,0 +1,68 @@
+name: UI Tests Firebase
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  generateTestAPK:
+    name: Generate APKs for UI tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Add secrets
+        run: |
+          cat > local.properties << ENDOFFILE
+          API_KEY=${{ secrets.API_KEY }}
+          ENDOFFILE
+      - name: Assemble app debug APK
+        run: bash ./gradlew :app:assembleDebug --stacktrace
+      - name: Upload app APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Assemble Android Instrumentation Tests
+        run: bash ./gradlew :app:assembleAndroidTest
+      - name: Upload Android Test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-androidTest
+          path: app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
+
+  firebase:
+    name: Run UI tests on Firebase Test Lab
+    needs: generateTestAPK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download app APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-debug
+
+      - name: Download Android test APK
+        uses: actions/download-artifact@v4
+        with:
+          name: app-debug-androidTest
+
+      - uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCLOUD_AUTH }}'
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v2'
+
+      - name: Set current project
+        run: gcloud config set project ${{ secrets.FIREBASE_PROJECT_ID }}
+
+      - name: Run Instrumentation Tests in Firebase Test Lab
+        run: gcloud firebase test android run --type instrumentation --app app-debug.apk --test app-debug-androidTest.apk --device model=Nexus6P,version=26,locale=en,orientation=portrait

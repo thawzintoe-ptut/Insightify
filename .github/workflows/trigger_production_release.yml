@@ -1,0 +1,28 @@
+name: Production Tag
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  updateVersions:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update build versions
+        run: |
+          currentTag="$(git describe --match '[0-9]*\.[0-9]*\.[0-9]*' --abbrev=0 --tags)"
+          versionName="versionName "\"$currentTag"\""
+          sed -i "0,/versionName/{s/.*versionName.*/$versionName/}" app/build.gradle
+          
+          currentVersionCode=$(grep "versionCode" build.gradle | awk '{print $2}')
+          versionCode="versionCode $((currentVersionCode + 1))"
+          sed -i "0,/versionCode/{s/.*versionCode.*/$versionCode/}" app/build.gradle
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}

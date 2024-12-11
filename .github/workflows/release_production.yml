@@ -1,0 +1,115 @@
+name: Production Release
+
+on:
+  workflow_run:
+    workflows: ["Production Tag"]
+    types:
+      - completed
+
+jobs:
+  unitTests:
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Add secrets
+        run: |
+          cat > local.properties << ENDOFFILE
+          BUGSNAG_API_KEY=${{ secrets.BUGSNAG_API_KEY }}
+          ENDOFFILE
+      - name: Unit tests
+        run: bash ./gradlew test
+
+  integrationTests:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Add secrets
+        run: |
+          cat > local.properties << ENDOFFILE
+          API_KEY=${{ secrets.API_KEY }}
+          ENDOFFILE
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedCheck
+
+  buildAAB:
+    name: Build Signed AAB
+    runs-on: ubuntu-latest
+    needs: [unitTests, integrationTests]
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Add secrets
+        run: |
+          cat > local.properties << ENDOFFILE
+          API_KEY=${{ secrets.API_KEY }}
+          ENDOFFILE
+      - name: Build .AAB
+        run: bash ./gradlew :app:bundleRelease --stacktrace
+      - name: Sign Android release
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - name: Upload app AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.SIGNED_RELEASE_FILE }}
+
+  uploadAAB:
+    name: Upload AAB to Google Play
+    runs-on: ubuntu-latest
+    needs: buildAAB
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download app AAB
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+      - name: Upload Android Release to Play Store
+        uses: r0adkll/upload-google-play@v1.0.5
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT }}
+          packageName: academy.droid.androidgithubactions
+          releaseFile: app-release.aab
+          track: production
+          whatsNewDirectory: whatsnew

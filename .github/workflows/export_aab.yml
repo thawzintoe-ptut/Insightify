@@ -1,0 +1,55 @@
+name: Build AAB
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionName:
+        description: 'App Version Name'
+        required: true
+      versionCode:
+        description: 'App Version Code'
+        required: true
+
+jobs:
+
+  buildAAB:
+    name: Build Signed AAB
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Update build version
+        run: |
+          versionNameInput=${{ github.event.inputs.versionName }}
+          versionName="versionName "\"$versionNameInput"\""
+          sed -i "0,/versionName/{s/.*versionName.*/$versionName/}" app/build.gradle
+          
+          versionCodeInput=${{ github.event.inputs.versionCode }}
+          versionCode="versionCode $versionCodeInput"
+          sed -i "0,/versionCode/{s/.*versionCode.*/$versionCode/}" app/build.gradle
+      - name: Add secrets
+        run: |
+          cat > local.properties << ENDOFFILE
+          API_KEY=${{ secrets.API_KEY }}
+          ENDOFFILE
+      - name: Build .AAB
+        run: bash ./gradlew :app:bundleRelease --stacktrace
+      - name: Sign Android release
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+      - name: Upload app AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: ${{ env.SIGNED_RELEASE_FILE }}

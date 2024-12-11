@@ -1,0 +1,250 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  danger:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Run Lint
+        run: bash ./gradlew lint
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      - uses: actions/cache@v4
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('Gemfile') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+      - uses: MeilCli/danger-action@v6
+        with:
+          plugins_file: 'Gemfile'
+          install_path: 'vendor/bundle'
+          danger_file: 'Dangerfile'
+          danger_id: 'danger-pr'
+        env:
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  spotless:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Run Spotless
+        run: bash ./gradlew spotlessApply
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Apply Spotless code formatting
+
+  changedModules:
+    name: Calculate Changed Modules
+    runs-on: ubuntu-latest
+    outputs:
+      TEST_MODULES: ${{ steps.changedModules.outputs.TEST_MODULES }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+      - name: Calculate changed modules
+        id: changedModules
+        run: |
+          git fetch origin
+          dest="origin/"${{ github.base_ref }}
+          branch="origin/"${{ github.head_ref }}
+          excluded_names=(".github" "gradle")
+          test_modules=""
+          git diff --name-only $dest..$branch | { while read line
+              do
+                module_name=${line%%/*}
+                if [[ ! ${excluded_names[*]} =~ *"$module_name"* && ${test_modules} != *"$module_name"* ]]; then
+                    test_modules="${test_modules} ${module_name}"
+                fi
+          done
+          echo "::set-output name=TEST_MODULES::${test_modules}"
+          }
+  unitTest:
+    needs: changedModules
+    name: Run unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Add secrets
+        run: |
+          cat > local.properties << ENDOFFILE
+          API_KEY=${{ secrets.API_KEY }}
+          ENDOFFILE
+      - name: Create test commands
+        run: |
+          AVAILABLE_TASKS=$(./gradlew tasks --all)
+          unit_test_modules="${{ needs.changedModules.outputs.TEST_MODULES }}"
+          test_commands=""
+          for module in $unit_test_modules
+          do 
+              if [[ $AVAILABLE_TASKS =~ $module":" ]]; then
+                test_commands=${test_commands}" :"${module}":test"
+              fi
+          done
+
+          if [[ $test_commands == "" ]]; then
+              test_commands="test"
+          fi
+          echo "UNIT_TEST_COMMANDS=${test_commands}" >> $GITHUB_ENV
+      - name: Unit tests
+        run: |
+          bash ./gradlew ${{ env.UNIT_TEST_COMMANDS }}
+  uiTests:
+    if: github.event.pull_request.draft == false
+    needs: changedModules
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        api-level: [ 29 ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Add secrets
+        run: |
+          cat > local.properties << ENDOFFILE
+          API_KEY=${{secrets.API_KEY}}
+          ENDOFFILE
+      - name: Calculate UI test modules
+        run: |
+          MODULES=$(./gradlew tasks --all | grep ":connectedCheck" | cut -d: -f1 | sort -u)
+          unit_test_modules="${{ needs.changedModules.outputs.TEST_MODULES }}"
+          for module in $MODULES
+          do
+            if [[ $unit_test_modules =~ $module ]]; then
+              test_modules="${test_modules} ${module}:connectedCheck"
+            fi
+          done
+          echo "UI_TEST_COMMANDS=${test_modules}" >> $GITHUB_ENV
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: run tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          script: ./gradlew ${{ env.UI_TEST_COMMANDS }} --stacktrace
+          
+  generateBundles:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Assemble app debug APK
+        run: |
+          bash ./gradlew :app:assembleDebug
+          mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/app-debug-branch.apk
+      - name: Upload branch APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-branch
+          path: app/build/outputs/apk/debug/app-debug-branch.apk
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: 'main'
+      - name: Assemble app debug APK
+        run: |
+          bash ./gradlew :app:assembleDebug
+          mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/app-debug-main.apk
+      - name: Upload app APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-main
+          path: app/build/outputs/apk/debug/app-debug-main.apk
+
+  apkSize:
+    runs-on: ubuntu-latest
+    needs: generateBundles
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Download branch APK
+        uses: actions/download-artifact@v4
+        with:
+          name: apk-branch
+      - name: Download main APK
+        uses: actions/download-artifact@v4
+        with:
+          name: apk-main
+      - name: Compare APK sizes
+        run: |
+          file1="app-debug-main.apk"
+          file2="app-debug-branch.apk"
+          file_size_one_kb=`du -k "$file1" | cut -f1`
+          file_size_two_kb=`du -k "$file2" | cut -f1`
+
+          file_size_one_mb=$(echo $file_size_one_kb | tail -1 | awk {'print $1'} | awk '{ total = $1 / 1024 ; printf("%.2fMB\n", total) }')
+          file_size_two_mb=$(echo $file_size_two_kb | tail -1 | awk {'print $1'} | awk '{ total = $1 / 1024 ; printf("%.2fMB\n", total) }')
+
+          if [[ $file_size_one_kb == $file_size_two_kb ]]; then
+              echo "OUTPUT=✅  APK size has not changed." >> $GITHUB_ENV
+          elif [[ "$file_size_one_kb" -gt "$file_size_two_kb" ]]; then
+              change=$((file_size_one_kb-file_size_two_kb))
+              file_size=$(echo $change | tail -1 | awk {'print $1'} | awk '{ total = $1 / 1024 ; printf("%.2fMB\n", total) }')
+              echo "OUTPUT=📉  New APK is ${file_size} smaller." >> $GITHUB_ENV
+          elif [[ "$file_size_two_kb" -gt "$file_size_one_kb" ]]; then
+              change=$((file_size_two_kb-file_size_one_kb))
+              file_size=$(echo $change | tail -1 | awk {'print $1'} | awk '{ total = $1 / 1024 ; printf("%.2fMB\n", total) }')
+              echo "OUTPUT=📈  New APK is ${file_size} larger." >> $GITHUB_ENV
+          fi
+      - name: Create comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ env.OUTPUT }}
