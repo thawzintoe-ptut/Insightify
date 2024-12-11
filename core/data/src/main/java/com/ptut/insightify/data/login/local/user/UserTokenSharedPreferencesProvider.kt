@@ -5,7 +5,7 @@ import com.ptut.insightify.domain.user.repository.UserTokenProvider
 import javax.inject.Inject
 
 class UserTokenSharedPreferencesProvider @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
 ) : UserTokenProvider {
 
     override fun getAccessToken(): String {

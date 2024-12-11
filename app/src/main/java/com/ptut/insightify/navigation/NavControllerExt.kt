@@ -11,9 +11,8 @@ import androidx.navigation.compose.NavHost
 import com.ptut.insightify.MainViewModel
 import com.ptut.insightify.auth.navigation.login
 import com.ptut.insightify.home.navigation.home
-import com.ptut.insightify.navigation.util.Screen
+import com.ptut.insightify.navigation.util.Route
 import com.ptut.insightify.splash.navigation.splash
-
 
 @Composable
 fun SetupNavGraph(
@@ -24,18 +23,18 @@ fun SetupNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Splash.route,
+        startDestination = Route.Splash.route,
     ) {
         splash {
             when (isLoggedIn) {
-                true -> navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.Splash.route) {
+                true -> navController.navigate(Route.Home.route) {
+                    popUpTo(Route.Splash.route) {
                         inclusive = true
                     }
                 }
 
-                false -> navController.navigate(Screen.Login.route) {
-                    popUpTo(Screen.Splash.route) {
+                false -> navController.navigate(Route.Login.route) {
+                    popUpTo(Route.Splash.route) {
                         inclusive = true
                     }
                 }
@@ -44,8 +43,8 @@ fun SetupNavGraph(
 
         login(
             onLoginCompleted = {
-                navController.navigate(Screen.Home.route) {
-                    popUpTo(Screen.Login.route) {
+                navController.navigate(Route.Home.route) {
+                    popUpTo(Route.Login.route) {
                         inclusive = true
                     }
                 }

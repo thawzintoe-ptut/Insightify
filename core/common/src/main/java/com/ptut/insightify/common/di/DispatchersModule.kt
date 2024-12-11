@@ -1,7 +1,6 @@
 package com.ptut.insightify.common.di
 
 import com.ptut.insightify.common.Dispatcher
-import com.ptut.insightify.common.InsightifyDispatchers
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

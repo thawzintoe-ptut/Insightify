@@ -13,164 +13,164 @@ import com.ptut.insightify.ui.R
 
 val neuzeitFontFamily =
     FontFamily(
-        Font(R.font.neuzeit)
+        Font(R.font.neuzeit),
     )
 
 // Set of Material typography styles to start with
 val Typography =
     Typography(
         displayLarge =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 57.sp,
-                lineHeight = 64.sp,
-                letterSpacing = (-0.25).sp,
-                color = Black20
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 57.sp,
+            lineHeight = 64.sp,
+            letterSpacing = (-0.25).sp,
+            color = Black20,
+        ),
         displayMedium =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 45.sp,
-                lineHeight = 52.sp,
-                letterSpacing = 0.sp
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 45.sp,
+            lineHeight = 52.sp,
+            letterSpacing = 0.sp,
+        ),
         displaySmall =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 36.sp,
-                lineHeight = 44.sp,
-                letterSpacing = 0.sp
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 36.sp,
+            lineHeight = 44.sp,
+            letterSpacing = 0.sp,
+        ),
         headlineLarge =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 32.sp,
-                lineHeight = 40.sp,
-                letterSpacing = 0.sp
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 32.sp,
+            lineHeight = 40.sp,
+            letterSpacing = 0.sp,
+        ),
         headlineMedium =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 28.sp,
-                lineHeight = 36.sp,
-                letterSpacing = 0.sp
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 28.sp,
+            lineHeight = 36.sp,
+            letterSpacing = 0.sp,
+        ),
         headlineSmall =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 24.sp,
-                lineHeight = 32.sp,
-                letterSpacing = 0.sp,
-                lineHeightStyle =
-                    LineHeightStyle(
-                        alignment = Alignment.Bottom,
-                        trim = Trim.None
-                    )
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 24.sp,
+            lineHeight = 32.sp,
+            letterSpacing = 0.sp,
+            lineHeightStyle =
+            LineHeightStyle(
+                alignment = Alignment.Bottom,
+                trim = Trim.None,
             ),
+        ),
         titleLarge =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-                lineHeight = 28.sp,
-                letterSpacing = 0.sp,
-                lineHeightStyle =
-                    LineHeightStyle(
-                        alignment = Alignment.Bottom,
-                        trim = Trim.LastLineBottom
-                    )
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 22.sp,
+            lineHeight = 28.sp,
+            letterSpacing = 0.sp,
+            lineHeightStyle =
+            LineHeightStyle(
+                alignment = Alignment.Bottom,
+                trim = Trim.LastLineBottom,
             ),
+        ),
         titleMedium =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.1.sp
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.1.sp,
+        ),
         titleSmall =
-            TextStyle(
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-                letterSpacing = 0.1.sp
-            ),
+        TextStyle(
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            letterSpacing = 0.1.sp,
+        ),
         // Default text style
         bodyLarge =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                letterSpacing = 0.5.sp,
-                lineHeightStyle =
-                    LineHeightStyle(
-                        alignment = Alignment.Center,
-                        trim = Trim.None
-                    )
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.5.sp,
+            lineHeightStyle =
+            LineHeightStyle(
+                alignment = Alignment.Center,
+                trim = Trim.None,
             ),
+        ),
         bodyMedium =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-                letterSpacing = 0.25.sp
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            letterSpacing = 0.25.sp,
+        ),
         bodySmall =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                letterSpacing = 0.4.sp
-            ),
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            letterSpacing = 0.4.sp,
+        ),
         // Used for Button
         labelLarge =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 14.sp,
-                lineHeight = 20.sp,
-                letterSpacing = 0.1.sp,
-                lineHeightStyle =
-                    LineHeightStyle(
-                        alignment = Alignment.Center,
-                        trim = Trim.LastLineBottom
-                    )
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            letterSpacing = 0.1.sp,
+            lineHeightStyle =
+            LineHeightStyle(
+                alignment = Alignment.Center,
+                trim = Trim.LastLineBottom,
             ),
+        ),
         // Used for Navigation items
         labelMedium =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 12.sp,
-                lineHeight = 16.sp,
-                letterSpacing = 0.5.sp,
-                lineHeightStyle =
-                    LineHeightStyle(
-                        alignment = Alignment.Center,
-                        trim = Trim.LastLineBottom
-                    )
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
+            lineHeight = 16.sp,
+            letterSpacing = 0.5.sp,
+            lineHeightStyle =
+            LineHeightStyle(
+                alignment = Alignment.Center,
+                trim = Trim.LastLineBottom,
             ),
+        ),
         // Used for Tag
         labelSmall =
-            TextStyle(
-                fontFamily = neuzeitFontFamily,
-                fontWeight = FontWeight.Medium,
-                fontSize = 10.sp,
-                lineHeight = 14.sp,
-                letterSpacing = 0.sp,
-                lineHeightStyle =
-                    LineHeightStyle(
-                        alignment = Alignment.Center,
-                        trim = Trim.LastLineBottom
-                    )
-            )
+        TextStyle(
+            fontFamily = neuzeitFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 10.sp,
+            lineHeight = 14.sp,
+            letterSpacing = 0.sp,
+            lineHeightStyle =
+            LineHeightStyle(
+                alignment = Alignment.Center,
+                trim = Trim.LastLineBottom,
+            ),
+        ),
     )

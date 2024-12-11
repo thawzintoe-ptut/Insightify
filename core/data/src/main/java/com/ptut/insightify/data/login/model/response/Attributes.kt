@@ -14,5 +14,5 @@ data class Attributes(
     @SerialName("refresh_token")
     val refreshToken: String,
     @SerialName("token_type")
-    val tokenType: String
+    val tokenType: String,
 )

@@ -53,7 +53,8 @@ class LoginRepositoryImplTest {
 
         // When
         loginRepository.fetchSurveyToken(
-            email, password,
+            email,
+            password,
         ).test {
             val result = awaitItem()
             awaitComplete()

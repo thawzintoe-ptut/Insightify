@@ -10,5 +10,5 @@ annotation class Dispatcher(val insightifyDispatchers: InsightifyDispatchers)
 enum class InsightifyDispatchers {
     Default,
     IO,
-    Main
+    Main,
 }

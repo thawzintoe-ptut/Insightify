@@ -10,25 +10,25 @@ import javax.inject.Inject
 
 class LoginUserUseCase @Inject constructor(
     private val loginRepository: LoginRepository,
-    private val userTokenProvider: UserTokenProvider
+    private val userTokenProvider: UserTokenProvider,
 ) {
     operator fun invoke(
         email: String,
-        password: String
+        password: String,
     ): Flow<Result<Unit, DataError.Network>> {
-            return loginRepository.fetchSurveyToken(email, password)
-                .map {
-                    when (it) {
-                        is Result.Error -> {
-                            Result.Error(it.error)
-                        }
+        return loginRepository.fetchSurveyToken(email, password)
+            .map {
+                when (it) {
+                    is Result.Error -> {
+                        Result.Error(it.error)
+                    }
 					
-                        is Result.Success -> {
-                            userTokenProvider.saveAccessToken(it.data.token)
-                            userTokenProvider.saveRefreshToke(it.data.refreshToken?:"")
-                            Result.Success(Unit)
-                        }
+                    is Result.Success -> {
+                        userTokenProvider.saveAccessToken(it.data.token)
+                        userTokenProvider.saveRefreshToke(it.data.refreshToken ?: "")
+                        Result.Success(Unit)
                     }
                 }
-        }
+            }
     }
+}

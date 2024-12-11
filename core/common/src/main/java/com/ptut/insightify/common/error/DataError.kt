@@ -13,7 +13,7 @@ sealed interface DataError : Error {
         FORBIDDEN,
         UNKNOWN,
         UNAUTHORIZED,
-        NETWORK_UNAVAILABLE
+        NETWORK_UNAVAILABLE,
     }
 
     enum class Local : DataError

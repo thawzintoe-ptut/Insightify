@@ -22,7 +22,6 @@ class SurveyRepositoryImpl @Inject constructor(
     }
 
     override fun refreshSurveys() {
-
     }
 
     companion object {

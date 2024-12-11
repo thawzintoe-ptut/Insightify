@@ -61,7 +61,6 @@ fun createGradientBrush(
     colors: List<Color>,
     isVertical: Boolean = true,
 ): Brush {
-
     val endOffset = if (isVertical) {
         Offset(0f, Float.POSITIVE_INFINITY)
     } else {

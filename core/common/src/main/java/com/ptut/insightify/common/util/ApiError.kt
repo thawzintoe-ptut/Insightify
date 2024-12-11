@@ -4,7 +4,7 @@ import java.io.IOException
 
 data class ApiException(
     val errorType: ApiErrorType?,
-    override val message: String = errorType?.description.orEmpty()
+    override val message: String = errorType?.description.orEmpty(),
 ) : IOException()
 
 enum class ApiErrorType(val code: Int, val description: String) {
@@ -24,7 +24,8 @@ enum class ApiErrorType(val code: Int, val description: String) {
     BadGateway(502, "Bad Gateway"),
     ServiceUnavailable(503, "Service Unavailable"),
     GatewayTimeout(504, "Gateway Timeout"),
-    HttpVersionNotSupported(505, "HTTP Version Not Supported");
+    HttpVersionNotSupported(505, "HTTP Version Not Supported"),
+    ;
     companion object {
         fun fromCode(code: Int?): ApiErrorType? = entries.find { it.code == code }
     }

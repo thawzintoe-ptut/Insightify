@@ -29,7 +29,6 @@ android {
         }
     }
 
-
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -98,7 +97,7 @@ dependencies {
 
     // paging
     implementation(libs.androidx.paging)
-    
+
     // room
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)

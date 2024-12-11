@@ -54,7 +54,7 @@ fun Design.Components.PasswordField(
             VisualTransformation.None
         },
     onValueChange: OnValueChange,
-    onImeKeyAction: OnImeKeyAction
+    onImeKeyAction: OnImeKeyAction,
 ) {
     val fieldValue =
         remember {
@@ -63,13 +63,13 @@ fun Design.Components.PasswordField(
     Column(modifier = modifier) {
         OutlinedTextField(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .background(
-                        shape = RoundedCornerShape(16.dp),
-                        color = White18
-                    ),
+            Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .background(
+                    shape = RoundedCornerShape(16.dp),
+                    color = White18,
+                ),
             value = fieldValue.value,
             onValueChange = {
                 fieldValue.value = it
@@ -78,51 +78,51 @@ fun Design.Components.PasswordField(
             visualTransformation = visualTransformation,
             singleLine = true,
             colors =
-                outlinedTextFieldColors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    cursorColor = White
-                ),
+            outlinedTextFieldColors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                cursorColor = White,
+            ),
             placeholder = {
                 Row(Modifier.fillMaxWidth()) {
                     Text(
                         text = stringResource(labelResId),
                         style =
-                            Typography.labelLarge.copy(
-                                color = White,
-                                fontSize = 20.sp
-                            ),
-                        color = White.copy(alpha = 0.3f)
+                        Typography.labelLarge.copy(
+                            color = White,
+                            fontSize = 20.sp,
+                        ),
+                        color = White.copy(alpha = 0.3f),
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         modifier =
-                            Modifier.clickable(
-                                onClick = {
-                                    // TODO: implement forget password
-                                }
-                            ),
+                        Modifier.clickable(
+                            onClick = {
+                                // TODO: implement forget password
+                            },
+                        ),
                         text = "Forgot?",
                         style =
-                            Typography.labelLarge.copy(
-                                color = White,
-                                fontSize = 20.sp,
-                                textAlign = TextAlign.Right
-                            ),
-                        color = White.copy(alpha = 0.3f)
+                        Typography.labelLarge.copy(
+                            color = White,
+                            fontSize = 20.sp,
+                            textAlign = TextAlign.Right,
+                        ),
+                        color = White.copy(alpha = 0.3f),
                     )
                 }
             },
             textStyle =
-                Typography.labelLarge.copy(
-                    color = White,
-                    fontSize = 20.sp
-                ),
+            Typography.labelLarge.copy(
+                color = White,
+                fontSize = 20.sp,
+            ),
             keyboardOptions = keyboardOptions,
             keyboardActions =
-                remember {
-                    KeyboardActions(onAny = { onImeKeyAction() })
-                }
+            remember {
+                KeyboardActions(onAny = { onImeKeyAction() })
+            },
         )
         Spacer(modifier = Modifier.height(12.dp))
         if (inputWrapper.errorId != null) {
@@ -130,7 +130,7 @@ fun Design.Components.PasswordField(
                 text = stringResource(inputWrapper.errorId),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp),
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = 16.dp),
             )
         }
     }
@@ -143,6 +143,6 @@ fun PasswordFieldPreview() {
         inputWrapper = InputWrapper(),
         labelResId = 0,
         onValueChange = {},
-        onImeKeyAction = {}
+        onImeKeyAction = {},
     )
 }
