@@ -25,6 +25,10 @@ android {
         }
     }
 
+    lint {
+        xmlReport = true
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
@@ -192,4 +196,6 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
+
+    // firebase
 }
