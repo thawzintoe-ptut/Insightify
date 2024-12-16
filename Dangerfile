@@ -4,5 +4,5 @@ warn("This PR is too big, please break it down into smaller chunks") if git.line
 
 warn("PR is classed as Work in Progress, do not merge!") if github.pr_title.include? "[WIP]"
 
-android_lint.report_file = "app/build/reports/lint-results-debug.xml"
+android_lint.report_file = "app/build/reports/lint-results-demoDebug.xml"
 android_lint.lint
