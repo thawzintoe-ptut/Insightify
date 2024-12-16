@@ -256,3 +256,4 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ env.OUTPUT }}
+          token: ${{ secrets.GH_TOKEN }}
