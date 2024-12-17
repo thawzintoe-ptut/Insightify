@@ -18,7 +18,7 @@ fun Retrofit.Builder.okHttpClient(init: OkHttpClient.Builder.() -> Unit): Retrof
         okHttpClientBuilder.addInterceptor(
             HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
-            }
+            },
         )
     }
     val okHttpClient = okHttpClientBuilder.build()

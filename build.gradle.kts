@@ -13,6 +13,7 @@ plugins {
     alias(libs.plugins.kotlin.parcelize) apply false
     alias(libs.plugins.kotlinx.serialization) apply false
     alias(libs.plugins.kover) apply false
+    alias(libs.plugins.spotless) apply false
 }
 
 subprojects {
@@ -26,8 +27,25 @@ subprojects {
         }
         debug.set(true)
     }
+
+    apply(plugin = "com.diffplug.spotless")
+    configure<com.diffplug.gradle.spotless.SpotlessExtension> {
+        kotlin {
+            target("**/*.kt")
+            targetExclude("${rootProject.layout.buildDirectory}/**/*.kt")
+
+            ktlint()
+            licenseHeaderFile(rootProject.file("spotless/copyright.kt"))
+        }
+
+        kotlinGradle {
+            target("*.gradle.kts")
+            ktlint()
+        }
+    }
+
 }
 
 tasks.register("clean") {
-    delete(rootProject.buildDir)
+    delete(rootProject.layout.buildDirectory)
 }

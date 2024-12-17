@@ -1,7 +1,6 @@
 package com.ptut.insightify.ui.components
 
 import androidx.annotation.StringRes
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -51,7 +50,7 @@ fun Design.Components.TextField(
             VisualTransformation.None
         },
     onValueChange: OnValueChange,
-    onImeKeyAction: OnImeKeyAction
+    onImeKeyAction: OnImeKeyAction,
 ) {
     val fieldValue =
         remember {
@@ -60,13 +59,13 @@ fun Design.Components.TextField(
     Column(modifier = modifier) {
         OutlinedTextField(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(64.dp)
-                    .background(
-                        shape = RoundedCornerShape(16.dp),
-                        color = White18
-                    ),
+            Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .background(
+                    shape = RoundedCornerShape(16.dp),
+                    color = White18,
+                ),
             value = fieldValue.value,
             onValueChange = {
                 fieldValue.value = it
@@ -75,32 +74,32 @@ fun Design.Components.TextField(
             visualTransformation = visualTransformation,
             singleLine = true,
             colors =
-                outlinedTextFieldColors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    cursorColor = White
-                ),
+            outlinedTextFieldColors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                cursorColor = White,
+            ),
             placeholder = {
                 Text(
                     text = stringResource(labelResId),
                     style =
-                        Typography.labelLarge.copy(
-                            color = White,
-                            fontSize = 20.sp
-                        ),
-                    color = White.copy(alpha = 0.3f)
+                    Typography.labelLarge.copy(
+                        color = White,
+                        fontSize = 20.sp,
+                    ),
+                    color = White.copy(alpha = 0.3f),
                 )
             },
             textStyle =
-                Typography.labelLarge.copy(
-                    color = White,
-                    fontSize = 20.sp
-                ),
+            Typography.labelLarge.copy(
+                color = White,
+                fontSize = 20.sp,
+            ),
             keyboardOptions = keyboardOptions,
             keyboardActions =
-                remember {
-                    KeyboardActions(onAny = { onImeKeyAction() })
-                }
+            remember {
+                KeyboardActions(onAny = { onImeKeyAction() })
+            },
         )
         Spacer(modifier = Modifier.height(12.dp))
         if (inputWrapper.errorId != null) {
@@ -108,12 +107,11 @@ fun Design.Components.TextField(
                 text = stringResource(inputWrapper.errorId),
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.labelSmall.copy(fontSize = 14.sp),
-                modifier = Modifier.padding(start = 16.dp)
+                modifier = Modifier.padding(start = 16.dp),
             )
         }
     }
 }
-
 
 @Preview
 @Composable
@@ -121,11 +119,10 @@ fun TextFieldPreview() {
     Design.Components.TextField(
         inputWrapper = InputWrapper(
             value = "thaw",
-            errorId = null
+            errorId = null,
         ),
         labelResId = 0,
         onValueChange = {},
-        onImeKeyAction = {}
+        onImeKeyAction = {},
     )
 }
-

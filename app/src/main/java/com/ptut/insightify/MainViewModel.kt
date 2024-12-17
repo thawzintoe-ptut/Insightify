@@ -10,12 +10,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-	private val userLoggedInUseCase: UserLoggedInUseCase
-): ViewModel() {
-	val isLoggedIn = userLoggedInUseCase()
-		.stateIn(
-			scope = viewModelScope,
-			started = SharingStarted.WhileSubscribed(500L),
-			initialValue = false
-		)
+    private val userLoggedInUseCase: UserLoggedInUseCase,
+) : ViewModel() {
+    val isLoggedIn = userLoggedInUseCase()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(500L),
+            initialValue = false,
+        )
 }

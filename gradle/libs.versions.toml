@@ -49,6 +49,9 @@ mockito-kotlin = "4.1.0"
 kover = "0.7.6"
 room = "2.6.1"
 mockk = "1.13.10"
+spotless = "6.19.0"
+gms-services = "4.4.2"
+firebase-bom = "33.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -140,6 +143,8 @@ androidx-room-testing = { group = "androidx.room", name = "room-testing", versio
 androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
 # mockk
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+# Firebase
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -154,4 +159,5 @@ ktlint-idea = { id = "org.jlleitschuh.gradle.ktlint-idea", version.ref = "ktlint
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlinPlugin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
-
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+gms-services = { id = "com.google.gms.google-services", version.ref = "gms-services" }

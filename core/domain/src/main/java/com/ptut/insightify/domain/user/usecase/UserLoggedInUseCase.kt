@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class UserLoggedInUseCase @Inject constructor(
-	private val userTokenProvider: UserTokenProvider
+    private val userTokenProvider: UserTokenProvider,
 ) {
-	operator fun invoke(): Flow<Boolean> = flow {
-		emit(userTokenProvider.getAccessToken().isNotBlank())
-	}
+    operator fun invoke(): Flow<Boolean> = flow {
+        emit(userTokenProvider.getAccessToken().isNotBlank())
+    }
 }

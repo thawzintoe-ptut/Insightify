@@ -14,7 +14,6 @@ import com.ptut.insightify.data.survey.util.mapToEntity
 import okio.IOException
 import retrofit2.HttpException
 
-
 @OptIn(ExperimentalPagingApi::class)
 class SurveyListRemoteMediator(
     private val apiService: SurveyApiService,
@@ -78,7 +77,6 @@ class SurveyListRemoteMediator(
         } catch (e: Exception) {
             return MediatorResult.Error(e)
         }
-
     }
 
     private suspend fun getRemoteKeyClosestToCurrentPosition(

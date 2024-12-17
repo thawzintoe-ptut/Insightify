@@ -27,27 +27,27 @@ fun Design.Components.Button(
             containerColor = Color.White,
             contentColor = Black20,
             disabledContainerColor = Color.Gray,
-            disabledContentColor = Color.Gray.copy(alpha = 0.38f)
+            disabledContentColor = Color.Gray.copy(alpha = 0.38f),
         ),
     enabled: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     FilledTonalButton(
         modifier = modifier.height(64.dp),
         onClick = onClick,
         enabled = enabled,
         colors = colors,
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Text(
             text = text,
             style =
-                Typography.labelLarge.copy(
-                    color = Black,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
-                ),
-            color = Black
+            Typography.labelLarge.copy(
+                color = Black,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+            ),
+            color = Black,
         )
     }
 }

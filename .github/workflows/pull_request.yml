@@ -40,7 +40,7 @@ jobs:
           danger_file: 'Dangerfile'
           danger_id: 'danger-pr'
         env:
-          DANGER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DANGER_GITHUB_API_TOKEN: ${{ secrets.GH_TOKEN }}
 
   spotless:
     runs-on: ubuntu-latest
@@ -114,9 +114,17 @@ jobs:
           test_commands=""
           for module in $unit_test_modules
           do 
-              if [[ $AVAILABLE_TASKS =~ $module":" ]]; then
-                test_commands=${test_commands}" :"${module}":test"
+            if [[ $module == *":"* ]]; then
+              if [[ $AVAILABLE_TASKS =~ ":${module}:test" ]]; then
+                test_commands="${test_commands} :${module}:test"
               fi
+            else
+              submodules=$(./gradlew :${module}:tasks --all | grep ":${module}:.*:test" | awk '{print $1}')
+              for submodule in $submodules
+              do
+                test_commands="${test_commands} ${submodule}"
+              done
+            fi
           done
 
           if [[ $test_commands == "" ]]; then
@@ -152,9 +160,9 @@ jobs:
           MODULES=$(./gradlew tasks --all | grep ":connectedCheck" | cut -d: -f1 | sort -u)
           unit_test_modules="${{ needs.changedModules.outputs.TEST_MODULES }}"
           for module in $MODULES
-          do
-            if [[ $unit_test_modules =~ $module ]]; then
-              test_modules="${test_modules} ${module}:connectedCheck"
+          do 
+            if [[ $AVAILABLE_TASKS =~ ":${module}:test" ]]; then
+                test_commands="${test_commands} :${module}:test"
             fi
           done
           echo "UI_TEST_COMMANDS=${test_modules}" >> $GITHUB_ENV
@@ -169,7 +177,7 @@ jobs:
         with:
           api-level: ${{ matrix.api-level }}
           script: ./gradlew ${{ env.UI_TEST_COMMANDS }} --stacktrace
-          
+
   generateBundles:
     runs-on: ubuntu-latest
     steps:
@@ -183,12 +191,12 @@ jobs:
       - name: Assemble app debug APK
         run: |
           bash ./gradlew :app:assembleDebug
-          mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/app-debug-branch.apk
+          mv app/build/outputs/apk/demo/debug/app-demo-debug.apk app/build/outputs/apk/demo/debug/app-debug-branch.apk
       - name: Upload branch APK
         uses: actions/upload-artifact@v4
         with:
           name: apk-branch
-          path: app/build/outputs/apk/debug/app-debug-branch.apk
+          path: app/build/outputs/apk/demo/debug/app-debug-branch.apk
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -196,12 +204,12 @@ jobs:
       - name: Assemble app debug APK
         run: |
           bash ./gradlew :app:assembleDebug
-          mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/app-debug-main.apk
+          mv app/build/outputs/apk/demo/debug/app-demo-debug.apk app/build/outputs/apk/demo/debug/app-debug-main.apk
       - name: Upload app APK
         uses: actions/upload-artifact@v4
         with:
           name: apk-main
-          path: app/build/outputs/apk/debug/app-debug-main.apk
+          path: app/build/outputs/apk/demo/debug/app-debug-main.apk
 
   apkSize:
     runs-on: ubuntu-latest
@@ -248,3 +256,4 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ env.OUTPUT }}
+          token: ${{ secrets.GH_TOKEN }}

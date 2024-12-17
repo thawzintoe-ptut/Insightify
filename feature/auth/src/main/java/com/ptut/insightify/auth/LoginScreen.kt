@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
@@ -35,17 +33,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
-import com.google.android.material.textfield.TextInputLayout.BoxBackgroundMode
 import com.ptut.insightify.auth.LoginViewModel.UiEvent
 import com.ptut.insightify.auth.util.FocusedTextFieldKey
 import com.ptut.insightify.auth.util.IdConstants.LOGIN_BTN
@@ -120,7 +114,6 @@ fun LoginRoute(
         onTextFieldFocusChanged(FocusedTextFieldKey.NONE, false)
     }
 
-
     Box {
         LoginScreenBackground(modifier = Modifier.fillMaxSize())
         if (uiState.isLoading) {
@@ -175,10 +168,9 @@ fun LoginRoute(
     }
 }
 
-
 @Preview(
     showBackground = true,
-    backgroundColor = 0xFA000000
+    backgroundColor = 0xFA000000,
 )
 @Composable
 fun LoginScreen(
@@ -196,7 +188,7 @@ fun LoginScreen(
     onPasswordFieldFocusChanged: (
         focusTextFieldKey: FocusedTextFieldKey,
         isFocused: Boolean,
-    ) -> Unit= { _, _ -> },
+    ) -> Unit = { _, _ -> },
     onPasswordChanged: (String) -> Unit = {},
     onPasswordImeAction: () -> Unit = {},
     onLoginClicked: () -> Unit = {},
@@ -301,6 +293,6 @@ fun LoginScreenBackground(modifier: Modifier = Modifier) {
         modifier = modifier,
         painter = painterResource(id = uiR.drawable.ic_background),
         contentDescription = "login background",
-        contentScale = ContentScale.FillBounds
+        contentScale = ContentScale.FillBounds,
     )
 }

@@ -1,6 +1,5 @@
 package com.ptut.insightify.auth
 
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.focus.FocusDirection
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -122,10 +121,10 @@ class LoginViewModel @Inject constructor(
                 email = userEmail,
                 password = userPassword,
                 areInputsValid = isEmailValid(userEmail) &&
-                        isPasswordValid(userPassword),
+                    isPasswordValid(userPassword),
                 hasError = false,
                 isKeyboardVisible = true,
-                errorType = null
+                errorType = null,
             )
         }
     }

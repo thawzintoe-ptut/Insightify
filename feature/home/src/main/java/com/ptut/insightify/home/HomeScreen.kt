@@ -68,22 +68,22 @@ fun HomeRoute(
         )
 
         if (
-            surveys.itemCount != 0
-            && surveys.loadState.refresh is LoadState.NotLoading
-            && surveys.loadState.append is LoadState.NotLoading
+            surveys.itemCount != 0 &&
+            surveys.loadState.refresh is LoadState.NotLoading &&
+            surveys.loadState.append is LoadState.NotLoading
         ) {
             HomeScreenPager(
                 name = uiState.name,
                 profileUrl = uiState.profileImageUrl,
                 currentDate = uiState.currentDate,
                 onDetailContinueClicked = onDetailContinueClicked,
-                surveyItems = surveys
+                surveyItems = surveys,
             )
         }
 
         if (
-            surveys.loadState.refresh is LoadState.Error
-            || surveys.loadState.append is LoadState.Error
+            surveys.loadState.refresh is LoadState.Error ||
+            surveys.loadState.append is LoadState.Error
         ) {
             uiState.errorType?.let {
                 Design.Components.ErrorScreen(
@@ -107,7 +107,7 @@ private fun HomeScreenPager(
     profileUrl: String = "https://randomuser.me/api/portraits",
     currentDate: String = "Today, 12:00 PM",
     surveyItems: LazyPagingItems<Survey>,
-    onDetailContinueClicked: (String) -> Unit = {}
+    onDetailContinueClicked: (String) -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = { surveyItems.itemCount })
     val indicatorScrollState = rememberLazyListState()

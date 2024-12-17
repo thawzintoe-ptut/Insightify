@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class InputWrapper(
     val value: String = "",
-    val errorId: Int? = null
+    val errorId: Int? = null,
 ) : Parcelable

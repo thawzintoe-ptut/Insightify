@@ -97,12 +97,12 @@ fun Design.Components.ErrorScreen(
 
 @Preview(
     showSystemUi = true,
-    showBackground = true
+    showBackground = true,
 )
 @Composable
 fun ErrorScreenPreview() {
     Design.Components.ErrorScreen(
         errorType = DataError.Network.NO_CONTENT,
-        onActionButtonClick = {}
+        onActionButtonClick = {},
     )
 }

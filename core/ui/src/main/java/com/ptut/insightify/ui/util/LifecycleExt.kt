@@ -15,13 +15,13 @@ fun <T> ObserveAsEvents(
     onEvent: (T) -> Unit,
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-	LaunchedEffect(flow,lifecycleOwner.lifecycle) {
-		lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-			withContext(Dispatchers.Main.immediate){
-				flow.collect { event ->
-					onEvent(event)
-				}
-			}
-		}
+    LaunchedEffect(flow, lifecycleOwner.lifecycle) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            withContext(Dispatchers.Main.immediate) {
+                flow.collect { event ->
+                    onEvent(event)
+                }
+            }
+        }
     }
 }
