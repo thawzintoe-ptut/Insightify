@@ -11,6 +11,5 @@ fun NavGraphBuilder.splash(onSplashCompleted: () -> Unit) {
         SplashScreen(
             onSplashCompleted = onSplashCompleted,
         )
-
     }
 }
