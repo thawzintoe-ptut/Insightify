@@ -65,4 +65,4 @@ jobs:
         run: gcloud config set project ${{ secrets.FIREBASE_PROJECT_ID }}
 
       - name: Run Instrumentation Tests in Firebase Test Lab
-        run: gcloud firebase test android run --type instrumentation --app app-uat-debug.apk --test app-uat-debug-androidTest.apk --device model=Nexus6P,version=26,locale=en,orientation=portrait
+        run: gcloud firebase test android run --type instrumentation --app app-uat-debug.apk --test app-uat-debug-androidTest.apk --device model=Nexus6P,version=34,locale=en,orientation=portrait
