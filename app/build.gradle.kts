@@ -1,4 +1,4 @@
-import org.jlleitschuh.gradle.ktlint.reporter.*
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     alias(libs.plugins.android.application)
