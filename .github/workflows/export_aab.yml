@@ -28,11 +28,11 @@ jobs:
         run: |
           versionNameInput=${{ github.event.inputs.versionName }}
           versionName="versionName "\"$versionNameInput"\""
-          sed -i "0,/versionName/{s/.*versionName.*/$versionName/}" app/build.gradle
+          sed -i "0,/versionName/{s/.*versionName.*/$versionName/}" app/build.gradle.kts
           
           versionCodeInput=${{ github.event.inputs.versionCode }}
           versionCode="versionCode $versionCodeInput"
-          sed -i "0,/versionCode/{s/.*versionCode.*/$versionCode/}" app/build.gradle
+          sed -i "0,/versionCode/{s/.*versionCode.*/$versionCode/}" app/build.gradle.kts
       - name: Add secrets
         run: |
           cat > local.properties << ENDOFFILE
@@ -43,7 +43,7 @@ jobs:
       - name: Sign Android release
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: app/build/outputs/bundle/release
+          releaseDirectory: app/build/outputs/bundle/prodRelease
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
