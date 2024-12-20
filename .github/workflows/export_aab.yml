@@ -27,12 +27,10 @@ jobs:
       - name: Update build version
         run: |
           versionNameInput=${{ github.event.inputs.versionName }}
-          versionName="versionName "\"$versionNameInput"\""
-          sed -i "0,/versionName/{s/.*versionName.*/$versionName/}" app/build.gradle.kts
+          sed -i "0,/versionName/{s/.*versionName.*/versionName = \"$versionNameInput\"/}" app/build.gradle.kts
           
           versionCodeInput=${{ github.event.inputs.versionCode }}
-          versionCode="versionCode $versionCodeInput"
-          sed -i "0,/versionCode/{s/.*versionCode.*/$versionCode/}" app/build.gradle.kts
+          sed -i "0,/versionCode/{s/.*versionCode.*/versionCode = $versionCodeInput/;}" app/build.gradle.kts
       - name: Add secrets
         run: |
           cat > local.properties << ENDOFFILE
