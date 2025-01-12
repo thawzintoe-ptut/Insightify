@@ -113,6 +113,6 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT }}
           packageName: com.ptut.insightify
-          releaseFiles: app/build/outputs/bundle/prodRelease/app-prod-release.aab
+          releaseFile: app-release.aab
           track: internal
           whatsNewDirectory: whatsnew
