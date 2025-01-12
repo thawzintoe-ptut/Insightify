@@ -1,6 +1,6 @@
 [versions]
 nameSpace = "com.ptut.insightify"
-versionName = "0.0.1-RC1"
+versionName = "0.0.1-RC2"
 versionCode = "1"
 compileSdk = "34"
 targetSdk = "34"
