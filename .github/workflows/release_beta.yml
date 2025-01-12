@@ -115,4 +115,5 @@ jobs:
           packageName: com.ptut.insightify
           releaseFiles: '${{ github.workspace }}/app-prod-release.aab'
           track: internal
+          status: completed
           whatsNewDirectory: whatsnew
