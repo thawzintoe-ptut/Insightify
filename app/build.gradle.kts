@@ -12,11 +12,11 @@ plugins {
 val signingProperties = loadProperties("$rootDir/signing.properties")
 
 android {
-    namespace = libs.versions.nameSpace.get()
+    namespace = "com.ptut.insightify"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = libs.versions.nameSpace.get()
+        applicationId = "com.ptut.insightify"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 10
