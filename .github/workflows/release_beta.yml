@@ -87,7 +87,7 @@ jobs:
       - name: Sign Android release
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: app/build/outputs/bundle/release
+          releaseDirectory: app/build/outputs/bundle/proRelease
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -112,7 +112,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1.0.5
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT }}
-          packageName: academy.droid.androidgithubactions
+          packageName: com.ptut.insightify
           releaseFile: app-release.aab
           track: beta
           whatsNewDirectory: whatsnew

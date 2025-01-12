@@ -15,8 +15,8 @@ jobs:
       - name: Update build version
         run: |
           currentTag="$(git describe --match "*-RC*" --abbrev=0 --tags)"
-          versionName="versionName "\"$currentTag"\""
-           sed -i "0,/versionName/{s/.*versionName.*/versionName = \"$versionNameInput\"/}" app/build.gradle.kts
+          versionNameInput="${currentTag}"
+          sed -i "0,/versionName/{s/versionName = .*/versionName = \\\"${versionNameInput}\\\"/}" app/build.gradle.kts
 
           currentVersionCode=$(grep "versionCode" app/build.gradle.kts | awk -F '=' '{print $2}' | tr -d ' ')
           versionCodeInput=$((currentVersionCode + 1))
