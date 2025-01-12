@@ -85,7 +85,7 @@ jobs:
       - name: Build .AAB
         run: bash ./gradlew :app:bundleRelease --stacktrace
       - name: Sign Android release
-        uses: r0adkll/sign-android-release@v1
+        uses: r0adkll/upload-google-play@v1.1.3
         with:
           releaseDirectory: app/build/outputs/bundle/proRelease
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
@@ -109,7 +109,7 @@ jobs:
         with:
           name: app-release
       - name: Upload Android Release to Play Store
-        uses: r0adkll/upload-google-play@v1.0.5
+        uses: r0adkll/upload-google-play@v1.1.3
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT }}
           packageName: com.ptut.insightify

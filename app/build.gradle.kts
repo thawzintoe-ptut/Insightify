@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.konan.properties.loadProperties
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
@@ -7,6 +8,8 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ktlint)
 }
+
+val signingProperties = loadProperties("$rootDir/signing.properties")
 
 android {
     namespace = libs.versions.nameSpace.get()
@@ -22,6 +25,16 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            // Remember to edit signing.properties to have the correct info for release build.
+            storeFile = file("../config/insightify_keystore")
+            storePassword = signingProperties.getProperty("KEYSTORE_PASSWORD")
+            keyPassword = signingProperties.getProperty("KEY_PASSWORD")
+            keyAlias = signingProperties.getProperty("KEY_ALIAS")
         }
     }
 
