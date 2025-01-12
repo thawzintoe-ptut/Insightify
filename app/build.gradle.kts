@@ -31,7 +31,7 @@ android {
     signingConfigs {
         create("release") {
             // Remember to edit signing.properties to have the correct info for release build.
-            storeFile = file("../config/insightify_keystore")
+            storeFile = file("../config/signingKey.jks")
             storePassword = signingProperties.getProperty("KEYSTORE_PASSWORD")
             keyPassword = signingProperties.getProperty("KEY_PASSWORD")
             keyAlias = signingProperties.getProperty("KEY_ALIAS")
