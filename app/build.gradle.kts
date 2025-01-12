@@ -19,7 +19,7 @@ android {
         applicationId = libs.versions.nameSpace.get()
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 7
+        versionCode = 8
         versionName = "0.0.1-RC2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
