@@ -18,9 +18,9 @@ jobs:
           versionName="versionName "\"$currentTag"\""
            sed -i "0,/versionName/{s/.*versionName.*/versionName = \"$versionNameInput\"/}" app/build.gradle.kts
 
-          currentVersionCode=$(grep "versionCode" build.gradle | awk '{print $2}')
-          versionCode="versionCode $((currentVersionCode + 1))"
-          sed -i "0,/versionCode/{s/.*versionCode.*/versionCode = $versionCodeInput/;}" app/build.gradle.kts
+          currentVersionCode=$(grep "versionCode" app/build.gradle.kts | awk -F '=' '{print $2}' | tr -d ' ')
+          versionCodeInput=$((currentVersionCode + 1))
+          sed -i "0,/versionCode/{s/versionCode =.*/versionCode = ${versionCodeInput}/}" app/build.gradle.kts
 
       - name: Commit & Push changes
         uses: actions-js/push@master
