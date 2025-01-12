@@ -57,8 +57,6 @@ android {
         productFlavors {
             create("demo") {
                 dimension = "app"
-                applicationIdSuffix = ".demo"
-                versionNameSuffix = "-demo"
                 buildConfigField(
                     "String",
                     "API_BASE_URL",
@@ -77,8 +75,6 @@ android {
             }
             create("uat") {
                 dimension = "app"
-                applicationIdSuffix = ".uat"
-                versionNameSuffix = "-uat"
                 buildConfigField(
                     "String",
                     "API_BASE_URL",
@@ -97,8 +93,6 @@ android {
             }
             create("prod") {
                 dimension = "app"
-                applicationIdSuffix = ".full"
-                versionNameSuffix = "-full"
                 buildConfigField(
                     "String",
                     "API_BASE_URL",
