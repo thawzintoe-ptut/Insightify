@@ -19,7 +19,7 @@ android {
         applicationId = "com.ptut.insightify"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 10
+        versionCode = 11
         versionName = "0.0.1-RC2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
