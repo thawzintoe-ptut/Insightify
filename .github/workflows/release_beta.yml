@@ -112,7 +112,7 @@ jobs:
         uses: r0adkll/upload-google-play@v1.1.3
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT }}
-          packageName: com.ptut.insightify
+          packageName: com.ptut.insightify.full
           releaseFile: app-release.aab
           track: beta
           whatsNewDirectory: whatsnew
