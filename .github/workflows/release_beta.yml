@@ -88,7 +88,7 @@ jobs:
         uses: r0adkll/sign-android-release@v1
         with:
           packageName: com.ptut.insightify
-          releaseDirectory: app/build/outputs/bundle/proRelease
+          releaseDirectory: app/build/outputs/bundle/prodRelease
           signingKeyBase64: ${{ secrets.SIGNING_KEY }}
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -114,6 +114,6 @@ jobs:
         with:
           serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT }}
           packageName: com.ptut.insightify
-          releaseFile: app/build/outputs/bundle/proRelease/app-prod-release.aab
+          releaseFile: app/build/outputs/bundle/prodRelease/app-prod-release.aab
           track: internal
           whatsNewDirectory: whatsnew
