@@ -74,9 +74,9 @@ jobs:
 
       - name: Set up release keystore
         env:
-          ENCODED_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          ENCODED_KEYSTORE: ${{ secrets.SIGNING_KEY }}
         run: |
-          echo $ENCODED_KEYSTORE | base64 -di > config/release.keystore
+          echo $ENCODED_KEYSTORE | base64 -di > config/signingKey.jks
 
       - name: Build release AAB
         run: ./gradlew bundleProductionRelease
