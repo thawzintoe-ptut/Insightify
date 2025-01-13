@@ -1,0 +1,87 @@
+name: Deploy Production build to Firebase
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy_production:
+    name: Build & Deploy Production
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 30
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache Gradle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches/modules-*
+            ~/.gradle/caches/jars-*
+            ~/.gradle/caches/build-cache-*
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up production properties
+        env:
+          ENV_PROPERTIES: ${{ secrets.ENV_PROPERTIES }}
+        run: |
+          echo -e $ENV_PROPERTIES > production.properties
+
+      - name: Set up Google Services json
+        env:
+          FIREBASE_GOOGLE_SERVICES_JSON: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
+        run: |
+          echo $FIREBASE_GOOGLE_SERVICES_JSON > app/google-services.json
+
+      - name: Set up New Relic properties
+        env:
+          NEWRELIC_PROPERTIES: ${{ secrets.NEWRELIC_PROPERTIES }}
+        run: echo -e "$NEWRELIC_PROPERTIES" > app/newrelic.properties
+
+      - name: Bump version code
+        run: |
+          perl -i -pe 's/ANDROID_VERSION_CODE =(.*)$/ANDROID_VERSION_CODE = '"$(date +'%Y%m%d%H')"'/g' buildSrc/src/main/java/Versions.kt
+
+      - name: Set up signing properties
+        env:
+          SIGNING_PROPERTIES: ${{ secrets.SIGNING_PROPERTIES }}
+        run: echo -e "$SIGNING_PROPERTIES" > signing.properties
+
+      - name: Set up release keystore
+        env:
+          ENCODED_KEYSTORE: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
+          echo $ENCODED_KEYSTORE | base64 -di > config/release.keystore
+
+      - name: Build release AAB
+        run: ./gradlew bundleProductionRelease
+
+      - name: Generate release notes
+        id: generate-release-notes
+        run: |
+          echo 'RELEASE_NOTE_CONTENT<<EOF' >> $GITHUB_OUTPUT
+          echo "$(git log --pretty=%B $(git describe --tags $(git rev-list --tags --max-count=1))..HEAD | grep "\[")" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+      - name: Deploy Android Production to Firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1.5.0
+        with:
+          appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_DISTRIBUTION_CREDENTIAL_JSON }}
+          groups: ${{ secrets.FIREBASE_DISTRIBUTION_TESTER_GROUPS }}
+          file: app/build/outputs/bundle/productionRelease/app-production-release.aab
+          releaseNotes: ${{ steps.generate-release-notes.outputs.RELEASE_NOTE_CONTENT }}
