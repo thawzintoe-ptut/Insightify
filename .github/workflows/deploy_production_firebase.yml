@@ -1,4 +1,4 @@
-name: Deploy Production build to Firebase
+name: Deploy Production Build to Firebase
 
 on:
   push:
@@ -7,16 +7,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_and_deploy_production:
-    name: Build & Deploy Production
+  # Job 1: Update Versions
+  update_versions:
+    name: Generate Beta Version
     runs-on: ubuntu-latest
-    environment: production
-    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update build version
+        run: |
+          currentTag="$(git describe --match "*-RC*" --abbrev=0 --tags || echo "0.0.0-RC0")"
+          versionNameInput="${currentTag}"
+          sed -i "0,/versionName/{s/versionName = .*/versionName = \\\"${versionNameInput}\\\"/}" app/build.gradle.kts
+
+          currentVersionCode=$(grep "versionCode" app/build.gradle.kts | awk -F '=' '{print $2}' | tr -d ' ')
+          versionCodeInput=$((currentVersionCode + 1))
+          sed -i "0,/versionCode/{s/versionCode =.*/versionCode = ${versionCodeInput}/}" app/build.gradle.kts
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job 2: Build AAB
+  build_aab:
+    name: Build Production AAB
+    runs-on: ubuntu-latest
+    needs: update_versions
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Cache Gradle
         uses: actions/cache@v2
@@ -41,20 +61,11 @@ jobs:
         run: |
           echo -e $ENV_PROPERTIES > production.properties
 
-      - name: Set up Google Services json
+      - name: Set up Google Services JSON
         env:
           FIREBASE_GOOGLE_SERVICES_JSON: ${{ secrets.FIREBASE_GOOGLE_SERVICES_JSON }}
         run: |
           echo $FIREBASE_GOOGLE_SERVICES_JSON > app/google-services.json
-
-      - name: Set up New Relic properties
-        env:
-          NEWRELIC_PROPERTIES: ${{ secrets.NEWRELIC_PROPERTIES }}
-        run: echo -e "$NEWRELIC_PROPERTIES" > app/newrelic.properties
-
-      - name: Bump version code
-        run: |
-          perl -i -pe 's/ANDROID_VERSION_CODE =(.*)$/ANDROID_VERSION_CODE = '"$(date +'%Y%m%d%H')"'/g' buildSrc/src/main/java/Versions.kt
 
       - name: Set up signing properties
         env:
@@ -70,6 +81,15 @@ jobs:
       - name: Build release AAB
         run: ./gradlew bundleProductionRelease
 
+  # Job 3: Generate Release Notes
+  generate_release_notes:
+    name: Generate Release Notes
+    runs-on: ubuntu-latest
+    needs: build_aab
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
       - name: Generate release notes
         id: generate-release-notes
         run: |
@@ -77,11 +97,17 @@ jobs:
           echo "$(git log --pretty=%B $(git describe --tags $(git rev-list --tags --max-count=1))..HEAD | grep "\[")" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
 
+  # Job 4: Deploy to Firebase
+  deploy_to_firebase:
+    name: Deploy to Firebase
+    runs-on: ubuntu-latest
+    needs: [build_aab, generate_release_notes]
+    steps:
       - name: Deploy Android Production to Firebase
         uses: wzieba/Firebase-Distribution-Github-Action@v1.5.0
         with:
           appId: ${{ secrets.FIREBASE_ANDROID_APP_ID }}
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_DISTRIBUTION_CREDENTIAL_JSON }}
-          groups: ${{ secrets.FIREBASE_DISTRIBUTION_TESTER_GROUPS }}
-          file: app/build/outputs/bundle/productionRelease/app-production-release.aab
+          groups: testers
+          file: app/build/outputs/bundle/prodRelease/app-prod-release.aab
           releaseNotes: ${{ steps.generate-release-notes.outputs.RELEASE_NOTE_CONTENT }}
