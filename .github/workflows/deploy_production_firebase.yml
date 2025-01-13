@@ -72,14 +72,16 @@ jobs:
           SIGNING_PROPERTIES: ${{ secrets.SIGNING_PROPERTIES }}
         run: echo -e "$SIGNING_PROPERTIES" > signing.properties
 
-      - name: Set up release keystore
-        env:
-          ENCODED_KEYSTORE: ${{ secrets.SIGNING_KEY }}
-        run: |
-          echo $ENCODED_KEYSTORE | base64 -di > config/signingKey.jks
-
-      - name: Build release AAB
-        run: ./gradlew bundleProductionRelease
+      - name: Build .AAB
+        run: bash ./gradlew :app:bundleRelease --stacktrace
+      - name: Sign Android release
+        uses: r0adkll/sign-android-release@v1
+        with:
+          releaseDirectory: app/build/outputs/bundle/prodRelease
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          alias: ${{ secrets.ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
 
   # Job 3: Generate Release Notes
   generate_release_notes:
