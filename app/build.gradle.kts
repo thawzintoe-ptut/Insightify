@@ -19,8 +19,8 @@ android {
         applicationId = "com.ptut.insightify"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 119
-        versionName = "0.0.1-RC101"
+        versionCode = 120
+        versionName = "0.0.1-RC102"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
