@@ -8,5 +8,4 @@ class InsightifyApplication : Application() {
     override fun onCreate() {
         super.onCreate()
     }
-
 }
